@@ -17,6 +17,7 @@ Blockstore uses the Bitcoin blockchain for storing name operations and data
 hashes, and the Kademlia-based distributed hash table (DHT) and other external
 datastores for storing the full data files outside of the blockchain.
 
+The last stable release is [v.0.10.1](https://github.com/blockstack/blockstore/tree/v0.0.10).
 ## Table of contents
 
 * [Overview](#overview)
