@@ -133,7 +133,7 @@ class MockBitcoindConnection( object ):
                 initial_outputs = []
                 for (privkey, value) in initial_utxos.items():
                     
-                    addr = pybitcoin.BitcoinPrivateKey( privkey ).public_key().address()
+                    addr = pybitcoin.ReddcoinPrivateKey( privkey ).public_key().address()
                     out = {
                         'value': value,
                         'script_hex': pybitcoin.make_pay_to_address_script( addr )
@@ -525,7 +525,7 @@ def btc_decoderawtransaction_get_pubkey_from_script( script ):
         # the rest of the script is a public key
         bin_pubkey = binascii.unhexlify( script[2:2*pubkey_len] )
         try:
-            pk = pybitcoin.BitcoinPublicKey( bin_pubkey )
+            pk = pybitcoin.ReddcoinPublicKey( bin_pubkey )
             return pk.to_hex()
 
         except:
@@ -633,7 +633,7 @@ def btc_decoderawtransaction_compat( tx_hex ):
 
         elif script_type == "pubkey":
             pubkey = btc_decoderawtransaction_get_pubkey_from_script( out['script_hex'] )
-            addr = pybitcoin.BitcoinPublicKey( pubkey ).address()
+            addr = pybitcoin.ReddcoinPublicKey( pubkey ).address()
             addresses.append( addr )
 
         elif script_type == "scripthash":

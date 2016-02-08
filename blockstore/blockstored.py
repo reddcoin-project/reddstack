@@ -429,7 +429,7 @@ def blockstore_name_preorder( name, privatekey, register_addr, tx_only=False, su
         tx_only = True
 
         # the sender will be the subsidizer (otherwise it will be the given private key's owner)
-        public_key = BitcoinPrivateKey( subsidy_key ).public_key().to_hex()
+        public_key = ReddcoinPrivateKey( subsidy_key ).public_key().to_hex()
 
     try:
         resp = preorder_name(str(name), privatekey, str(register_addr), str(consensus_hash), blockchain_client_inst, \
@@ -597,7 +597,7 @@ def blockstore_name_register( name, privatekey, register_addr, renewal_fee=None,
         tx_only = True
 
         # the sender will be the subsidizer (otherwise it will be the given private key's owner)
-        public_key = BitcoinPrivateKey( subsidy_key ).public_key().to_hex()
+        public_key = ReddcoinPrivateKey( subsidy_key ).public_key().to_hex()
 
     try:
         resp = register_name(str(name), privatekey, str(register_addr), blockchain_client_inst, renewal_fee=renewal_fee, \
@@ -766,7 +766,7 @@ def blockstore_name_renew( name, privatekey, register_addr=None, tx_only=False, 
     if register_addr is None:
         register_addr = name_rec['address']
 
-    if str(register_addr) != str(pybitcoin.BitcoinPrivateKey( privatekey ).public_key().address()):
+    if str(register_addr) != str(pybitcoin.ReddcoinPrivateKey( privatekey ).public_key().address()):
         return {"error": "Only the name's owner can send a renew request"}
 
     renewal_fee = get_name_cost( name )

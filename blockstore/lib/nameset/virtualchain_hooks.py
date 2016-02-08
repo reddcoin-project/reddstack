@@ -101,7 +101,7 @@ def get_public_key_hex_from_tx( inputs, address ):
             pubkey = None 
             
             try:
-                pubkey = pybitcoin.BitcoinPublicKey( str(pubkey_hex) ) 
+                pubkey = pybitcoin.ReddcoinPublicKey( str(pubkey_hex) ) 
             except Exception, e: 
                 traceback.print_exc()
                 log.warning("Invalid public key '%s'" % pubkey_hex)

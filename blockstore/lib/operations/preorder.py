@@ -24,7 +24,7 @@
 from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, \
-    hex_hash160, bin_hash160, BitcoinPrivateKey, BitcoinPublicKey, script_hex_to_address, get_unspents, \
+    hex_hash160, bin_hash160, ReddcoinPrivateKey, ReddcoinPublicKey, script_hex_to_address, get_unspents, \
     make_op_return_outputs
 
 
@@ -139,16 +139,16 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
     
     if subsidy_public_key is not None:
         # subsidizing
-        pubk = BitcoinPublicKey( subsidy_public_key )
+        pubk = ReddcoinPublicKey( subsidy_public_key )
         
-        from_address = BitcoinPublicKey( subsidy_public_key ).address()
+        from_address = ReddcoinPublicKey( subsidy_public_key ).address()
 
         inputs = get_unspents( from_address, blockchain_client )
         script_pubkey = get_script_pubkey( subsidy_public_key )
 
     else:
         # ordering directly
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         script_pubkey = get_script_pubkey( public_key )
         

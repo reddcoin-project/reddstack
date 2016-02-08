@@ -24,7 +24,7 @@
 from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, hex_hash160, \
-    BitcoinPrivateKey, get_unspents, script_hex_to_address
+    ReddcoinPrivateKey, get_unspents, script_hex_to_address
 
 from pybitcoin.transactions.outputs import calculate_change_amount
 from utilitybelt import is_hex
@@ -172,11 +172,11 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
     
     if subsidy_public_key is not None:
         # subsidizing
-        pubk = BitcoinPublicKey( subsidy_public_key )
+        pubk = ReddcoinPublicKey( subsidy_public_key )
         
         if user_public_key is not None and renewal_fee is not None:
             # renewing, and subsidizing the renewal
-            from_address = BitcoinPublicKey( user_public_key ).address() 
+            from_address = ReddcoinPublicKey( user_public_key ).address() 
             subsidized_renewal = True
 
         else:
@@ -187,7 +187,7 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
 
     elif private_key is not None:
         # ordering directly
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         
         # get inputs and from address using private key

@@ -220,7 +220,7 @@ class BlockstoreDB( virtualchain.StateEngine ):
                  continue
 
              pubkey_hex = name_record['sender_pubkey']
-             pubkey_addr = pybitcoin.BitcoinPublicKey( str(pubkey_hex) ).address()
+             pubkey_addr = pybitcoin.ReddcoinPublicKey( str(pubkey_hex) ).address()
 
              if pubkey_addr != namespace_reveal['recipient_address']:
                  continue
@@ -334,7 +334,7 @@ class BlockstoreDB( virtualchain.StateEngine ):
       Generate all possible NAME_IMPORT addresses from the NAMESPACE_REVEAL public key
       """
 
-      pubkey_addr = pybitcoin.BitcoinPublicKey( str(pubkey_hex) ).address()
+      pubkey_addr = pybitcoin.ReddcoinPublicKey( str(pubkey_hex) ).address()
 
       # do we have a cached one on disk?
       cached_keychain = os.path.join( virtualchain.get_working_dir(), "%s.keychain" % pubkey_addr)
@@ -2515,7 +2515,7 @@ class BlockstoreDB( virtualchain.StateEngine ):
 
       # sender p2pkh script must use a public key derived from the namespace revealer's public key
       sender_pubkey_hex = str(nameop['sender_pubkey'])
-      sender_pubkey = pybitcoin.BitcoinPublicKey( str(sender_pubkey_hex) )
+      sender_pubkey = pybitcoin.ReddcoinPublicKey( str(sender_pubkey_hex) )
       sender_address = sender_pubkey.address()
 
       import_addresses = self.import_addresses.get(namespace_id, None)

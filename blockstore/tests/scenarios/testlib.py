@@ -41,7 +41,7 @@ import pybitcoin
 
 class Wallet(object):
     def __init__(self, pk_wif, value_str ):
-        pk = pybitcoin.BitcoinPrivateKey( pk_wif )
+        pk = pybitcoin.ReddcoinPrivateKey( pk_wif )
 
         self._pk = pk
         self.privkey = pk_wif

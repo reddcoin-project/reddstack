@@ -23,7 +23,7 @@
 
 from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
-    make_pay_to_address_script, BitcoinPrivateKey, BitcoinPublicKey, get_unspents, script_hex_to_address
+    make_pay_to_address_script, ReddcoinPrivateKey, ReddcoinPublicKey, get_unspents, script_hex_to_address
  
 from pybitcoin.transactions.outputs import calculate_change_amount
 from utilitybelt import is_hex
@@ -174,14 +174,14 @@ def broadcast(name, destination_address, keepdata, consensus_hash, private_key, 
     
     if user_public_key is not None:
         # subsidizing 
-        pubk = BitcoinPublicKey( user_public_key )
+        pubk = ReddcoinPublicKey( user_public_key )
 
         from_address = pubk.address()
         inputs = get_unspents( from_address, blockchain_client )
 
     elif private_key is not None:
         # ordering directly 
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         
         # get inputs and from address using private key

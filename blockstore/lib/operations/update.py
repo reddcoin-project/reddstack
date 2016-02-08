@@ -21,8 +21,8 @@
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from pybitcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, BitcoinPrivateKey, \
-    BitcoinPublicKey, get_unspents, script_hex_to_address, hex_hash160, broadcast_transaction, serialize_transaction, \
+from pybitcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
+    ReddcoinPublicKey, get_unspents, script_hex_to_address, hex_hash160, broadcast_transaction, serialize_transaction, \
     make_op_return_outputs, make_op_return_script
 
 from utilitybelt import is_hex
@@ -144,7 +144,7 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
     
     if user_public_key is not None:
         # subsidizing 
-        pubk = BitcoinPublicKey( user_public_key )
+        pubk = ReddcoinPublicKey( user_public_key )
         from_address = pubk.address()
         
         # get inputs from utxo provider 
@@ -152,7 +152,7 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
 
     elif private_key is not None:
         # ordering directly
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         
         # get inputs and from address using private key

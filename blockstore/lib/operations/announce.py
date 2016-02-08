@@ -114,14 +114,14 @@ def broadcast(message_hash, private_key, blockchain_client, testset=False, block
     
     if user_public_key is not None:
         # subsidizing 
-        pubk = BitcoinPublicKey( user_public_key )
+        pubk = ReddcoinPublicKey( user_public_key )
 
         from_address = pubk.address()
         inputs = get_unspents( from_address, blockchain_client )
 
     elif private_key is not None:
         # ordering directly 
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         
         private_key_obj, from_address, inputs = analyze_private_key(private_key, blockchain_client)

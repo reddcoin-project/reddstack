@@ -23,7 +23,7 @@
 
 from utilitybelt import is_hex, is_valid_int
 from binascii import hexlify, unhexlify
-from pybitcoin import BitcoinPrivateKey, BitcoinPublicKey, script_to_hex, make_pay_to_address_script, analyze_private_key
+from pybitcoin import ReddcoinPrivateKey, ReddcoinPublicKey, script_to_hex, make_pay_to_address_script, analyze_private_key
 from pybitcoin.transactions.outputs import calculate_change_amount
 
 import virtualchain
@@ -122,7 +122,7 @@ def blockstore_script_to_hex(script):
 # generate a pay-to-pubkeyhash script from a public key.
 def get_script_pubkey( public_key ):
    
-   hash160 = BitcoinPublicKey(public_key).hash160()
+   hash160 = ReddcoinPublicKey(public_key).hash160()
    script_pubkey = script_to_hex( 'OP_DUP OP_HASH160 %s OP_EQUALVERIFY OP_CHECKSIG' % hash160)
    return  script_pubkey
 
@@ -243,10 +243,10 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
     
     private_key_objs = []
     for pk in private_keys:
-        if isinstance( pk, pybitcoin.BitcoinPrivateKey ):
+        if isinstance( pk, pybitcoin.ReddcoinPrivateKey ):
             private_key_objs.append( pk )
         else:
-            private_key_objs.append( pybitcoin.BitcoinPrivateKey( pk ) )
+            private_key_objs.append( pybitcoin.ReddcoinPrivateKey( pk ) )
             
     # make the transaction 
     unsigned_tx = pybitcoin.serialize_transaction( inputs, outputs )
@@ -364,7 +364,7 @@ def tx_dust_fee_from_inputs_and_outputs( inputs, outputs ):
     """
 
     # throw-away key to use as a place-holder
-    pk = pybitcoin.BitcoinPrivateKey('5HsbxjxLx1gTzvhWTPZ7DZ91xbGvHHuVxCXJqfruCc6tEog3M2k')
+    pk = pybitcoin.ReddcoinPrivateKey('5HsbxjxLx1gTzvhWTPZ7DZ91xbGvHHuVxCXJqfruCc6tEog3M2k')
     serialized_tx = tx_serialize_and_sign( inputs, outputs, pk )
     return tx_dust_fee( serialized_tx )
     
@@ -413,7 +413,7 @@ def tx_make_subsidizable( blockstore_tx, fee_cb, max_fee, subsidy_key, utxo_clie
         return None
     
     else:
-        log.debug("%s will subsidize %s satoshi" % (pybitcoin.BitcoinPrivateKey( subsidy_key ).public_key().address(), dust_fee + op_fee ))
+        log.debug("%s will subsidize %s satoshi" % (pybitcoin.ReddcoinPrivateKey( subsidy_key ).public_key().address(), dust_fee + op_fee ))
     
     # calculate how much the dust fee needs to be 
     subsidized_tx = tx_serialize_subsidized_tx( blockstore_tx, private_key_obj.to_hex(), payer_utxo_inputs, payer_address, 0, op_fee )
