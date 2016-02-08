@@ -96,6 +96,11 @@ def make_outputs( data, inputs, change_addr, op_fee, format='bin' ):
    
     op_fee = max( op_fee, DEFAULT_DUST_FEE )
 
+    log.debug("Reddcoin: The price Op_Fees is %s satoshis" % op_fee)
+    log.debug("Reddcoin: OP_RETURN data == %s" % data )
+    log.debug("Reddcoin: Inputs == %s" % inputs)
+    log.debug("Reddcoin: Change Address == %s" % change_addr)
+
     outputs =  [
         # main output
         {"script_hex": make_op_return_script(data, format=format),
@@ -109,6 +114,8 @@ def make_outputs( data, inputs, change_addr, op_fee, format='bin' ):
         {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
          "value": op_fee}
     ]
+
+    print "Outputs == " + str(outputs)
     
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
     outputs[1]['value'] = calculate_change_amount( inputs, op_fee, dust_fee )
@@ -125,13 +132,20 @@ def broadcast( namespace_id, register_addr, consensus_hash, private_key, blockch
    register_addr        the addr of the key that will reveal the namespace (mixed into the preorder to prevent name preimage attack races)
    private_key          the Bitcoin address that created this namespace, and can populate it.
    """
-  
+   log.debug("Reddcoin: namespace_id %s" % namespace_id)
+   log.debug("Reddcoin: register_addr == %s" % register_addr )
+   log.debug("Reddcoin: private_key address == %s" % private_key)
+
    if blockchain_broadcaster is None:
        blockchain_broadcaster = blockchain_client 
    
-   pubkey_hex = BitcoinPrivateKey( private_key ).public_key().to_hex()
-   
+   pubkey_hex = ReddcoinPrivateKey( private_key ).public_key().to_hex()
+   testnet_pubkey = ReddcoinPrivateKey( private_key ).public_key()
+      
    script_pubkey = get_script_pubkey( pubkey_hex )
+   log.debug("Reddcoin: Testnet Public Key == %s" % testnet_pubkey)
+   log.debug("Are we on Testnet == %s" % TESTNET)
+
    nulldata = build( namespace_id, script_pubkey, register_addr, consensus_hash, testset=testset )
    
    # get inputs and from address
