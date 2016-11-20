@@ -49,6 +49,7 @@ if not globals().has_key('log'):
 
 blockstore_db = None
 blockstore_db_lock = threading.Lock()
+last_load_time = 0
 
 def get_burn_fee_from_outputs( outputs ):
     """
@@ -303,7 +304,7 @@ def get_first_block_id():
    return start_block
 
 
-def get_db_state():
+def get_db_state(disposition=None):
    """
    (required by virtualchain state engine)
    
@@ -311,24 +312,27 @@ def get_db_state():
    
    Get a handle to our state engine implementation
    (i.e. our name database)
+
+   @disposition is for compatibility.  It is ignored
    """
    
-   global blockstore_db, blockstore_db_lock
-   
-   now = time.time()
-   
-   blockstore_db_lock.acquire()
+   global blockstore_db
+   global last_load_time
 
-   if blockstore_db is not None:
-      blockstore_db_lock.release()
-      return blockstore_db 
-   
+   mtime = None
    db_filename = virtualchain.get_db_filename()
+
+   if os.path.exists(db_filename):
+       sb = os.stat(db_filename)
+       mtime = sb.st_mtime 
+
+   if blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time:
+       log.info("(Re)Loading blockstore state from '%s'" % db_filename )
+       blockstore_db = BlockstoreDB( db_filename )
+
+       if mtime is not None:
+          last_load_time = mtime 
    
-   log.info("(Re)Loading blockstore state from '%s'" % db_filename )
-   blockstore_db = BlockstoreDB( db_filename )
-   
-   blockstore_db_lock.release()
    return blockstore_db
 
 
