@@ -264,11 +264,11 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: transfer address 
-    if script_hex_to_address( outputs[1]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
         return (None, None)
     
     # 2: change address 
-    if script_hex_to_address( outputs[2]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[2]["script_hex"], version_byte=111 ) is None:
         return (None, None)
     
     dust_fee = (len(inputs) + 2) * DEFAULT_DUST_FEE + DEFAULT_OP_RETURN_FEE

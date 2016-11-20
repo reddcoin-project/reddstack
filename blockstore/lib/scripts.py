@@ -250,6 +250,7 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
             
     # make the transaction 
     unsigned_tx = pybitcoin.serialize_transaction( inputs, outputs )
+    print("tx_serialize_&_sign: Un_TX :: = %s" % unsigned_tx)
     
     # sign with the appropriate private keys 
     for i in xrange(0, len(inputs)):
@@ -292,7 +293,7 @@ def tx_output_is_burn( output ):
     """
     Is an output's script an OP_RETURN script to our burn address?
     """
-    addr = pybitcoin.script_hex_to_address( output['script_hex'] )
+    addr = pybitcoin.script_hex_to_address( output['script_hex'], version_byte=111 )
     return (addr == BLOCKSTORE_BURN_ADDRESS)
 
 

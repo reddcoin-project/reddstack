@@ -133,18 +133,20 @@ def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=N
         {"script_hex": make_pay_to_address_script(change_addr),
          "value": calculate_change_amount(change_inputs, 0, 0)},
     ]
+
+    donation_fee = 0
     
     if renewal_fee is not None:
         outputs.append(
             
-            # burn address (when renewing)
-            {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
-             "value": renewal_fee}
+            # Reddcoin not using burn address (when renewing)
+            # {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
+            #  "value": renewal_fee}
         )
 
     if pay_fee:
         dust_fee = tx_dust_fee_from_inputs_and_outputs( change_inputs, outputs )
-        outputs[2]['value'] = calculate_change_amount( change_inputs, bill, dust_fee )
+        outputs[2]['value'] = calculate_change_amount( change_inputs, bill - donation_fee, dust_fee )
 
     return outputs
     
@@ -255,17 +257,17 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: reveal address 
-    if script_hex_to_address( outputs[1]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
         return (None, None)
     
     # 2: change address 
-    if script_hex_to_address( outputs[2]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[2]["script_hex"], version_byte=111 ) is None:
         return (None, None)
     
     # 3: burn address, if given 
     if len(outputs) == 4:
         
-        addr_hash = script_hex_to_address( outputs[3]["script_hex"] )
+        addr_hash = script_hex_to_address( outputs[3]["script_hex"], version_byte=111 )
         if addr_hash is None:
             return (None, None) 
         

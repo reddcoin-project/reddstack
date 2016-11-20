@@ -384,13 +384,16 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
    if sender_pubkey_hex is None:
       log.warning("No public key found for (%s, %s)" % (opcode, hexlify(data)))
    
-   op_fee = get_burn_fee_from_outputs( outputs )
+   
+   # Reddcoin is not burning fees
+   # op_fee = get_burn_fee_from_outputs( outputs )
+   op_fee = fee
    
    if opcode in [NAME_REGISTRATION, NAMESPACE_REVEAL]:
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_registration_recipient_from_outputs( outputs )
-         recipient_address = pybitcoin.script_hex_to_address( recipient )
+         recipient_address = pybitcoin.script_hex_to_address( recipient, version_byte=111 )
       except Exception, e:
          log.exception(e)
          raise Exception("No registration address for (%s, %s)" % (opcode, hexlify(data)))
@@ -400,7 +403,7 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_transfer_recipient_from_outputs( outputs )
-         recipient_address = pybitcoin.script_hex_to_address( recipient )
+         recipient_address = pybitcoin.script_hex_to_address( recipient, version_byte=111 )
       except Exception, e:
          log.exception(e)
          raise Exception("No recipient for (%s, %s)" % (opcode, hexlify(data)))

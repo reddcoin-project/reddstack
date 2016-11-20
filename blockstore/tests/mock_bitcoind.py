@@ -629,7 +629,7 @@ def btc_decoderawtransaction_compat( tx_hex ):
         addresses = []
 
         if script_type == "pubkeyhash":
-            addresses.append( pybitcoin.script_hex_to_address( out['script_hex'] ) )
+            addresses.append( pybitcoin.script_hex_to_address( out['script_hex'], version_byte=111 ) )
 
         elif script_type == "pubkey":
             pubkey = btc_decoderawtransaction_get_pubkey_from_script( out['script_hex'] )

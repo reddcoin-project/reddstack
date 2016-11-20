@@ -41,7 +41,7 @@ op-code logic.
 from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, \
-    hex_hash160, bin_hash160, BitcoinPrivateKey, BitcoinPublicKey, script_hex_to_address, get_unspents, \
+    hex_hash160, bin_hash160, ReddcoinPrivateKey, ReddcoinPublicKey, script_hex_to_address, get_unspents, \
     make_op_return_outputs
 
 
@@ -150,7 +150,7 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
     Make outputs for a name preorder:
     [0] OP_RETURN with the name 
     [1] address with the NAME_PREORDER sender's address
-    [2] pay-to-address with the *burn address* with the fee
+    [2] (optional) pay-to-address with the *donation address* with the donation fee
     
     NOTE: the fee must cover *all* the names
     """
@@ -164,13 +164,25 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
         {"script_hex": make_pay_to_address_script(sender_addr),
          "value": calculate_change_amount(inputs, 0, 0)},
         
-        # burn address
-        {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
-         "value": op_fee}
+        # Reddcoin not using burn address
+        # {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
+        # "value": op_fee}
     ]
 
+    donation_fee = 0
+
+    if BLOCKSTORE_DONATION_ADDRESS is not None:
+        if BLOCKSTORE_DONATION_PERCENT > 0:
+            donation_fee = op_fee * BLOCKSTORE_DONATION_PERCENT
+
+            outputs.append(
+                # Reddcoin donation address
+                {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
+                 "value": donation_fee}
+            )
+
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
-    outputs[1]['value'] = calculate_change_amount( inputs, op_fee, dust_fee )
+    outputs[1]['value'] = calculate_change_amount( inputs, op_fee - donation_fee, dust_fee )
     return outputs
 
 
@@ -200,16 +212,16 @@ def broadcast(name_list, private_key, register_addr_list, consensus_hash, blockc
     
     if subsidy_public_key is not None:
         # subsidizing
-        pubk = BitcoinPublicKey( subsidy_public_key )
+        pubk = ReddcoinPublicKey( subsidy_public_key )
         
-        from_address = BitcoinPublicKey( subsidy_public_key ).address()
+        from_address = ReddcoinPublicKey( subsidy_public_key ).address()
 
         inputs = get_unspents( from_address, blockchain_client )
         script_pubkey = get_script_pubkey( subsidy_public_key )
 
     else:
         # ordering directly
-        pubk = BitcoinPrivateKey( private_key ).public_key()
+        pubk = ReddcoinPrivateKey( private_key ).public_key()
         public_key = pubk.to_hex()
         script_pubkey = get_script_pubkey( public_key )
         
@@ -277,12 +289,12 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: change address 
-    if script_hex_to_address( outputs[1]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
         log.error("outputs[1] has no decipherable change address")
         return (None, None)
     
     # 2: burn address 
-    addr_hash = script_hex_to_address( outputs[2]["script_hex"] )
+    addr_hash = script_hex_to_address( outputs[2]["script_hex"], version_byte=111 )
     if addr_hash is None:
         log.error("outputs[2] has no decipherable burn address")
         return (None, None) 

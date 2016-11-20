@@ -92,9 +92,9 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
     Make outputs for a name preorder:
     [0] OP_RETURN with the name 
     [1] address with the NAME_PREORDER sender's address
-    [2] pay-to-address with the *burn address* with the fee
+    [2] (optional) pay-to-address with the *donation address* with the donation fee
     """
-    
+
     outputs = [
         # main output
         {"script_hex": make_op_return_script(data, format=format),
@@ -104,13 +104,25 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
         {"script_hex": make_pay_to_address_script(sender_addr),
          "value": calculate_change_amount(inputs, 0, 0)},
         
-        # burn address
-        {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
-         "value": op_fee}
+        # Reddcoin not using burn address
+        #{"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
+        # "value": op_fee}
     ]
 
+    donation_fee = 0
+
+    if BLOCKSTORE_DONATION_ADDRESS is not None:
+        if BLOCKSTORE_DONATION_PERCENT > 0:
+            donation_fee = op_fee * BLOCKSTORE_DONATION_PERCENT
+
+            outputs.append(
+                # Reddcoin donation address
+                {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
+                 "value": donation_fee}
+            )
+
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
-    outputs[1]['value'] = calculate_change_amount( inputs, op_fee, dust_fee )
+    outputs[1]['value'] = calculate_change_amount( inputs, op_fee - donation_fee, dust_fee )
     return outputs
 
 
@@ -154,7 +166,15 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
         
         # get inputs and from address using private key
         private_key_obj, from_address, inputs = analyze_private_key(private_key, blockchain_client)
-        
+    #check value of inputs larger than fee
+    values = 0
+    for inp in inputs:
+        values += inp["value"]
+
+    if values <= fee:
+        return {"Error": "Available funds %s less than fee %s" % (values, fee)}
+
+
     nulldata = build( name, script_pubkey, register_addr, consensus_hash, testset=testset)
     outputs = make_outputs(nulldata, inputs, from_address, fee, format='hex')
     
@@ -214,12 +234,12 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: change address 
-    if script_hex_to_address( outputs[1]["script_hex"] ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
         log.error("outputs[1] has no decipherable change address")
         return (None, None)
     
     # 2: burn address 
-    addr_hash = script_hex_to_address( outputs[2]["script_hex"] )
+    addr_hash = script_hex_to_address( outputs[2]["script_hex"], version_byte=111 )
     if addr_hash is None:
         log.error("outputs[2] has no decipherable burn address")
         return (None, None) 
