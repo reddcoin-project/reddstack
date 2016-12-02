@@ -37,7 +37,7 @@ from kademlia.utils import digest
 
 import sys
 import json
-import pybitcoin
+import pyreddcoin
 import os
 import socket
 
@@ -84,7 +84,7 @@ class BlockStorage(object):
             self.log.info("value not JSON, not storing")
             return
 
-        hash = pybitcoin.hash.hex_hash160(value)
+        hash = pyreddcoin.hash.hex_hash160(value)
         test_key = digest(hash)
 
         if key != test_key:
@@ -105,7 +105,7 @@ class BlockStorage(object):
         self.cull()
         if key in self.data:
             value = self[key]
-            hash = pybitcoin.hash.hex_hash160(value)
+            hash = pyreddcoin.hash.hex_hash160(value)
 
             test_key = digest(hash)
 
