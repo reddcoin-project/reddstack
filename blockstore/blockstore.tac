@@ -58,15 +58,15 @@ virtualchain.setup_virtualchain( blockstore_state_engine )
 dht_opts = lib.config.default_dht_opts()
 
 if not dht_opts['disable']:
-   
-   # start up Kademlia node
-   dht_servers = dht_opts['servers']
-   dht_port = dht_opts['port']
 
-   dht_server = Server(storage=BlockStorage())
-   bootstrap_servers = hostname_to_ip(dht_servers)
-   dht_server.bootstrap(bootstrap_servers)
+    # start up Kademlia node
+    dht_servers = dht_opts['servers']
+    dht_port = dht_opts['port']
 
-   server_dht = internet.UDPServer(dht_port, dht_server.protocol)
-   server_dht.setServiceParent(application)
+    dht_server = Server(storage=BlockStorage())
+    bootstrap_servers = hostname_to_ip(dht_servers)
+    dht_server.bootstrap(bootstrap_servers)
+
+    server_dht = internet.UDPServer(dht_port, dht_server.protocol)
+    server_dht.setServiceParent(application)
 
