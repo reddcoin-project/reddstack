@@ -43,7 +43,8 @@ setup(
         'virtualchain>=0.0.8',
         'kademlia>=0.5',
         'keychain>=0.1.4',
-        'blockstore-client>=0.0.12'
+        'blockstore-client>=0.0.12.1',
+        'pyreddcoin>=0.9.9'
     ],
     classifiers=[
         'Intended Audience :: Developers',
