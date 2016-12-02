@@ -21,14 +21,16 @@
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+#from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+from pyreddcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, \
     hex_hash160, bin_hash160, ReddcoinPrivateKey, ReddcoinPublicKey, script_hex_to_address, get_unspents, \
     make_op_return_outputs
 
 
-from pybitcoin.transactions.outputs import calculate_change_amount
+#from pyreddcoin.transactions.outputs import calculate_change_amount
+from pyreddcoin.transactions.outputs import calculate_change_amount
 from utilitybelt import is_hex
 from binascii import hexlify, unhexlify
 
@@ -122,7 +124,7 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
             )
 
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
-    outputs[1]['value'] = calculate_change_amount( inputs, op_fee - donation_fee, dust_fee )
+    outputs[1]['value'] = calculate_change_amount( inputs, op_fee+donation_fee, dust_fee )
     return outputs
 
 
