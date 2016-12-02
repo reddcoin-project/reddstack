@@ -22,7 +22,7 @@
 """ 
 
 import testlib
-import pybitcoin
+import pyreddcoin
 import json
 import shutil
 import tempfile
@@ -192,7 +192,7 @@ def check( state_engine ):
         return False 
 
     # not preordered
-    preorder = state_engine.get_name_preorder( "foo.test", pybitcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
+    preorder = state_engine.get_name_preorder( "foo.test", pyreddcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
     if preorder is not None:
         print "preordered: %s" % preorder
         return False
@@ -209,7 +209,7 @@ def check( state_engine ):
         return False 
 
     # transferred 
-    if name_rec['address'] != wallets[3].addr or name_rec['sender'] != pybitcoin.make_pay_to_address_script(wallets[3].addr):
+    if name_rec['address'] != wallets[3].addr or name_rec['sender'] != pyreddcoin.make_pay_to_address_script(wallets[3].addr):
         print "owned by %s; expected %s" % (name_rec['address'], wallets[3].addr)
         return False 
 

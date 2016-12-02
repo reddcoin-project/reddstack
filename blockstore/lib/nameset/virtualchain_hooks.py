@@ -27,7 +27,7 @@ import os
 from binascii import hexlify, unhexlify
 import time
 
-import pybitcoin 
+import pyreddcoin 
 import traceback
 import json
 import copy
@@ -102,7 +102,7 @@ def get_public_key_hex_from_tx( inputs, address ):
             pubkey = None 
             
             try:
-                pubkey = pybitcoin.ReddcoinPublicKey( str(pubkey_hex) ) 
+                pubkey = pyreddcoin.ReddcoinPublicKey( str(pubkey_hex) ) 
             except Exception, e: 
                 traceback.print_exc()
                 log.warning("Invalid public key '%s'" % pubkey_hex)
@@ -397,7 +397,7 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_registration_recipient_from_outputs( outputs )
-         recipient_address = pybitcoin.script_hex_to_address( recipient, version_byte=111 )
+         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=111 )
       except Exception, e:
          log.exception(e)
          raise Exception("No registration address for (%s, %s)" % (opcode, hexlify(data)))
@@ -407,7 +407,7 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_transfer_recipient_from_outputs( outputs )
-         recipient_address = pybitcoin.script_hex_to_address( recipient, version_byte=111 )
+         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=111 )
       except Exception, e:
          log.exception(e)
          raise Exception("No recipient for (%s, %s)" % (opcode, hexlify(data)))

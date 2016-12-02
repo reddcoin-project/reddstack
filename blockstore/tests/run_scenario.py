@@ -11,7 +11,7 @@ os.environ['BLOCKSTORE_TEST'] = '1'
 current_dir =  os.path.abspath(os.path.dirname(__file__) + "/../..")
 sys.path.insert(0, current_dir)
 
-import pybitcoin
+import pyreddcoin
 from blockstore.lib import *
 from blockstore.tests import *
 import virtualchain 

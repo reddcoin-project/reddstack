@@ -28,7 +28,8 @@ import string
 from test import test_support
 
 from opennamelib import *
-from pybitcoin import *
+#from pybitcoin import *
+from pyreddcoin import *
 
 try:
     with open('data/secrets.json', 'r') as f:

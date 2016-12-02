@@ -23,7 +23,7 @@
 
 import testlib 
 import json
-import pybitcoin
+import pyreddcoin
 
 wallets = [
     testlib.Wallet( "5JesPiN68qt44Hc2nT8qmyZ1JDwHebfoh9KQ52Lazb1m1LaKNj9", 100000000000 ),
@@ -91,7 +91,7 @@ def check( state_engine ):
         print "invalid update hash"
         return False
 
-    if foo['address'] != "1PYu4vKB3g2QLDFdurxqYSJ9aJSed7tne1" or foo['sender'] != pybitcoin.make_pay_to_address_script("1PYu4vKB3g2QLDFdurxqYSJ9aJSed7tne1"):
+    if foo['address'] != "1PYu4vKB3g2QLDFdurxqYSJ9aJSed7tne1" or foo['sender'] != pyreddcoin.make_pay_to_address_script("1PYu4vKB3g2QLDFdurxqYSJ9aJSed7tne1"):
         return False 
     
     return True

@@ -27,7 +27,7 @@ from twisted.python import log
 from kademlia.network import Server
 
 import sys
-import pybitcoin
+import pyreddcoin
 import json
 
 log.startLogging(sys.stdout)
@@ -36,7 +36,7 @@ log.startLogging(sys.stdout)
 #value = "temp"
 
 value = '{"name": "Muneeb Ali Khan"}'
-key = pybitcoin.hash.hex_hash160(value)
+key = pyreddcoin.hash.hex_hash160(value)
 
 print key
 print value

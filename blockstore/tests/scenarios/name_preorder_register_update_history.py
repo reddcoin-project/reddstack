@@ -22,7 +22,7 @@
 """ 
 
 import testlib
-import pybitcoin
+import pyreddcoin
 import json
 
 wallets = [
@@ -96,7 +96,7 @@ def check( state_engine ):
         return False 
 
     # not preordered
-    preorder = state_engine.get_name_preorder( "foo.test", pybitcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
+    preorder = state_engine.get_name_preorder( "foo.test", pyreddcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
     if preorder is not None:
         return False
     

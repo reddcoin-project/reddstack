@@ -37,11 +37,11 @@ sys.path.insert(0, current_dir)
 
 import blockstore.blockstored as blockstored
 import blockstore
-import pybitcoin
+import pyreddcoin
 
 class Wallet(object):
     def __init__(self, pk_wif, value_str ):
-        pk = pybitcoin.ReddcoinPrivateKey( pk_wif )
+        pk = pyreddcoin.ReddcoinPrivateKey( pk_wif )
 
         self._pk = pk
         self.privkey = pk_wif
@@ -318,7 +318,7 @@ def get_unspents( addr ):
     Get the list of unspent outputs for an address.
     """
     global utxo_client
-    return pybitcoin.get_unspents( addr, utxo_client )
+    return pyreddcoin.get_unspents( addr, utxo_client )
 
 
 def broadcast_transaction( tx_hex ):
@@ -326,7 +326,7 @@ def broadcast_transaction( tx_hex ):
     Send out a raw transaction to the mock framework.
     """
     global utxo_client
-    return pybitcoin.broadcast_transaction( tx_hex, utxo_client )
+    return pyreddcoin.broadcast_transaction( tx_hex, utxo_client )
 
 
 def decoderawtransaction( tx_hex ):

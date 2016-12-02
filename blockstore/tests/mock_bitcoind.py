@@ -43,8 +43,8 @@ from decimal import *
 from utilitybelt import is_valid_int
 from ConfigParser import SafeConfigParser
 
-import pybitcoin
-import pybitcoin.transactions.opcodes as opcodes
+import pyreddcoin
+import pyreddcoin.transactions.opcodes as opcodes
 
 # hack around absolute paths 
 current_dir =  os.path.abspath(os.path.dirname(__file__) + "../..")
@@ -133,10 +133,10 @@ class MockBitcoindConnection( object ):
                 initial_outputs = []
                 for (privkey, value) in initial_utxos.items():
                     
-                    addr = pybitcoin.ReddcoinPrivateKey( privkey ).public_key().address()
+                    addr = pyreddcoin.ReddcoinPrivateKey( privkey ).public_key().address()
                     out = {
                         'value': value,
-                        'script_hex': pybitcoin.make_pay_to_address_script( addr )
+                        'script_hex': pyreddcoin.make_pay_to_address_script( addr )
                     }
                     initial_outputs.append( out )
 
@@ -306,7 +306,7 @@ class MockBitcoindConnection( object ):
         version = '01000000'
         t_hex = "%08X" % self.time
         difficulty_hex = "%08X" % self.difficulty
-        tx_merkle_tree = pybitcoin.MerkleTree( block_txids )
+        tx_merkle_tree = pyreddcoin.MerkleTree( block_txids )
         tx_merkle_root = tx_merkle_tree.root()
         prev_block_hash = self.block_hashes[ self.end_block - 1 ]        
 
@@ -334,7 +334,7 @@ class MockBitcoindConnection( object ):
                        bitcoin.main.encode(int(block['bits'], 16), 256, 4)[::-1] + \
                        bitcoin.main.encode(block['nonce'], 256, 4)[::-1] 
 
-        block['hash'] = pybitcoin.bin_double_sha256( block_header )[::-1].encode('hex')
+        block['hash'] = pyreddcoin.bin_double_sha256( block_header )[::-1].encode('hex')
         block['header'] = block_header
 
         for txid in block['tx']:
@@ -525,7 +525,7 @@ def btc_decoderawtransaction_get_pubkey_from_script( script ):
         # the rest of the script is a public key
         bin_pubkey = binascii.unhexlify( script[2:2*pubkey_len] )
         try:
-            pk = pybitcoin.ReddcoinPublicKey( bin_pubkey )
+            pk = pyreddcoin.ReddcoinPublicKey( bin_pubkey )
             return pk.to_hex()
 
         except:
@@ -629,16 +629,16 @@ def btc_decoderawtransaction_compat( tx_hex ):
         addresses = []
 
         if script_type == "pubkeyhash":
-            addresses.append( pybitcoin.script_hex_to_address( out['script_hex'], version_byte=111 ) )
+            addresses.append( pyreddcoin.script_hex_to_address( out['script_hex'], version_byte=111 ) )
 
         elif script_type == "pubkey":
             pubkey = btc_decoderawtransaction_get_pubkey_from_script( out['script_hex'] )
-            addr = pybitcoin.ReddcoinPublicKey( pubkey ).address()
+            addr = pyreddcoin.ReddcoinPublicKey( pubkey ).address()
             addresses.append( addr )
 
         elif script_type == "scripthash":
             script_hash = btc_decoderawtransaction_get_script_hash_from_script( out['script_hex'] ) 
-            addr = pybitcoin.b58check_encode( binascii.unhexlify( script_hash ), version_byte=5 )
+            addr = pyreddcoin.b58check_encode( binascii.unhexlify( script_hash ), version_byte=5 )
             addresses.append( addr )
 
         vout_out = {

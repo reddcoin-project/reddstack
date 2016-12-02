@@ -48,7 +48,8 @@ from lib import workpool
 
 import dht.plugin
 
-from pybitcoin.rpc.namecoind_client import NamecoindClient
+#from pyreddcoin.rpc.namecoind_client import NamecoindClient
+from pyreddcoin.rpc.namecoind_client import NamecoindClient
 
 """
     Blockstore mirror daemon, for Amazon S3

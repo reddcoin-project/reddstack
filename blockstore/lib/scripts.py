@@ -23,8 +23,10 @@
 
 from utilitybelt import is_hex, is_valid_int
 from binascii import hexlify, unhexlify
-from pybitcoin import ReddcoinPrivateKey, ReddcoinPublicKey, script_to_hex, make_pay_to_address_script, analyze_private_key
-from pybitcoin.transactions.outputs import calculate_change_amount
+#from pybitcoin import ReddcoinPrivateKey, ReddcoinPublicKey, script_to_hex, make_pay_to_address_script, analyze_private_key
+#from pyreddcoin.transactions.outputs import calculate_change_amount
+from pyreddcoin import ReddcoinPrivateKey, ReddcoinPublicKey, script_to_hex, make_pay_to_address_script, analyze_private_key
+from pyreddcoin.transactions.outputs import calculate_change_amount
 
 import virtualchain
 from virtualchain import getrawtransaction 
@@ -202,7 +204,7 @@ def tx_serialize( inputs, outputs, locktime, version ):
         if "sequence" in inp:
             tmp_inp["sequence"] = inp["sequence"]
         else:
-            tmp_inp["sequence"] = pybitcoin.UINT_MAX 
+            tmp_inp["sequence"] = pyreddcoin.UINT_MAX 
             
         if "script_sig" in inp:
             tmp_inp["script"] = inp["script_sig"]
@@ -243,13 +245,13 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
     
     private_key_objs = []
     for pk in private_keys:
-        if isinstance( pk, pybitcoin.ReddcoinPrivateKey ):
+        if isinstance( pk, pyreddcoin.ReddcoinPrivateKey ):
             private_key_objs.append( pk )
         else:
-            private_key_objs.append( pybitcoin.ReddcoinPrivateKey( pk ) )
+            private_key_objs.append( pyreddcoin.ReddcoinPrivateKey( pk ) )
             
     # make the transaction 
-    unsigned_tx = pybitcoin.serialize_transaction( inputs, outputs )
+    unsigned_tx = pyreddcoin.serialize_transaction( inputs, outputs )
     print("tx_serialize_&_sign: Un_TX :: = %s" % unsigned_tx)
     
     # sign with the appropriate private keys 
@@ -286,14 +288,14 @@ def tx_output_is_op_return( output ):
     """
     Is an output's script an OP_RETURN script?
     """
-    return int( output["script_hex"][0:2], 16 ) == pybitcoin.opcodes.OP_RETURN
+    return int( output["script_hex"][0:2], 16 ) == pyreddcoin.opcodes.OP_RETURN
     
     
 def tx_output_is_burn( output ):
     """
     Is an output's script an OP_RETURN script to our burn address?
     """
-    addr = pybitcoin.script_hex_to_address( output['script_hex'], version_byte=111 )
+    addr = pyreddcoin.script_hex_to_address( output['script_hex'], version_byte=111 )
     return (addr == BLOCKSTORE_BURN_ADDRESS)
 
 
@@ -365,7 +367,7 @@ def tx_dust_fee_from_inputs_and_outputs( inputs, outputs ):
     """
 
     # throw-away key to use as a place-holder
-    pk = pybitcoin.ReddcoinPrivateKey('5HsbxjxLx1gTzvhWTPZ7DZ91xbGvHHuVxCXJqfruCc6tEog3M2k')
+    pk = pyreddcoin.ReddcoinPrivateKey('5HsbxjxLx1gTzvhWTPZ7DZ91xbGvHHuVxCXJqfruCc6tEog3M2k')
     serialized_tx = tx_serialize_and_sign( inputs, outputs, pk )
     return tx_dust_fee( serialized_tx )
     
@@ -414,7 +416,7 @@ def tx_make_subsidizable( blockstore_tx, fee_cb, max_fee, subsidy_key, utxo_clie
         return None
     
     else:
-        log.debug("%s will subsidize %s satoshi" % (pybitcoin.ReddcoinPrivateKey( subsidy_key ).public_key().address(), dust_fee + op_fee ))
+        log.debug("%s will subsidize %s satoshi" % (pyreddcoin.ReddcoinPrivateKey( subsidy_key ).public_key().address(), dust_fee + op_fee ))
     
     # calculate how much the dust fee needs to be 
     subsidized_tx = tx_serialize_subsidized_tx( blockstore_tx, private_key_obj.to_hex(), payer_utxo_inputs, payer_address, 0, op_fee )

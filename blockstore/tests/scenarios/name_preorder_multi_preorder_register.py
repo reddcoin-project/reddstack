@@ -22,7 +22,7 @@
 """ 
 
 import testlib
-import pybitcoin
+import pyreddcoin
 import json
 import sys
 import blockstore.blockstored as blockstored
@@ -105,14 +105,14 @@ def check( state_engine ):
         return False 
 
     # there won't be a preorder for an individual name...
-    preorder = state_engine.get_name_preorder( "foo.test", pybitcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
+    preorder = state_engine.get_name_preorder( "foo.test", pyreddcoin.make_pay_to_address_script(wallets[2].addr), wallets[3].addr )
     if preorder is not None:
         print "found name preorder for 'foo.test'"
         return False
    
     # there won't be a preorder for all names either
     preorder = state_engine.get_name_multi_preorder( ['foo.test', 'bar.test', 'baz.test'], \
-                                                     pybitcoin.make_pay_to_address_script(wallets[2].addr), \
+                                                     pyreddcoin.make_pay_to_address_script(wallets[2].addr), \
                                                      [wallets[3].addr, wallets[4].addr, wallets[5].addr])
 
     if preorder is not None:
@@ -133,8 +133,8 @@ def check( state_engine ):
             print "'%s' not owned by '%s'" % (name, wallet.addr)
             return False 
 
-        if name_rec['sender'] != pybitcoin.make_pay_to_address_script(wallet.addr):
-            print "'%s' not controlled by '%s'" % (name, pybitcoin.make_pay_to_address_script(wallet.addr))
+        if name_rec['sender'] != pyreddcoin.make_pay_to_address_script(wallet.addr):
+            print "'%s' not controlled by '%s'" % (name, pyreddcoin.make_pay_to_address_script(wallet.addr))
             return False
 
         if prev_name_rec is not None and prev_name_rec['history'] != name_rec['history']:
@@ -155,8 +155,8 @@ def check( state_engine ):
         print "'%s' not owned by '%s'" % (name, wallet.addr)
         return False 
 
-    if name_rec['sender'] != pybitcoin.make_pay_to_address_script(wallet[3].addr):
-        print "'%s' not controlled by '%s'" % (name, pybitcoin.make_pay_to_address_script(wallet[3].addr))
+    if name_rec['sender'] != pyreddcoin.make_pay_to_address_script(wallet[3].addr):
+        print "'%s' not controlled by '%s'" % (name, pyreddcoin.make_pay_to_address_script(wallet[3].addr))
         return False
 
     return True

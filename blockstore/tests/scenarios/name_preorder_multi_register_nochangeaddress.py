@@ -22,7 +22,7 @@
 """ 
 
 import testlib
-import pybitcoin
+import pyreddcoin
 import json
 import sys
 import blockstore.blockstored as blockstored
@@ -97,7 +97,7 @@ def check( state_engine ):
 
     # there will be a multi-preorder 
     preorder = state_engine.get_name_multi_preorder( ['foo.test', 'bar.test', 'baz.test'], \
-                                                     pybitcoin.make_pay_to_address_script(wallets[2].addr), \
+                                                     pyreddcoin.make_pay_to_address_script(wallets[2].addr), \
                                                      [wallets[3].addr, wallets[4].addr, wallets[5].addr])
 
     if preorder is None:
@@ -108,7 +108,7 @@ def check( state_engine ):
         print "Insufficient fee"
         return False 
 
-    if not state_engine.is_sender_multi_preordering( pybitcoin.make_pay_to_address_script(wallets[2].addr) ):
+    if not state_engine.is_sender_multi_preordering( pyreddcoin.make_pay_to_address_script(wallets[2].addr) ):
         print "Inconsistent state: preorder exists, but not preordering"
         return False 
 

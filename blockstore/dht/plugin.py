@@ -50,7 +50,7 @@ from blockstore.parsing import json_stable_serialize
 
 import types
 import re
-import pybitcoin
+import pyreddcoin
 
 
 DHT_SERVER_PORT = 6265  # blockstored default to port 6264
@@ -76,7 +76,7 @@ def dht_data_hash(data):
     Calculate a key from the data.
     """
 
-    return pybitcoin.hash.hex_hash160(data)
+    return pyreddcoin.hash.hex_hash160(data)
 
 
 def dht_url(data_hash):

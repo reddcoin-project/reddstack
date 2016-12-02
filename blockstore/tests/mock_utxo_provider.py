@@ -106,7 +106,7 @@ class MockUTXOProvider(object):
             }
 
             # NOTE: assumes p2pkh
-            addr = pybitcoin.script_hex_to_address( script_hex, version_byte=111 )
+            addr = pyreddcoin.script_hex_to_address( script_hex, version_byte=111 )
             if not self.unspents.has_key( addr ):
                 self.unspents[addr] = [utxo]
             else:
@@ -137,7 +137,7 @@ class MockUTXOProvider(object):
 
             # NOTE: assumes p2pkh
             ref_out = ref_outputs[output_index]
-            ref_addr = pybitcoin.script_hex_to_address( ref_out['script_hex'], version_byte=111 ) 
+            ref_addr = pyreddcoin.script_hex_to_address( ref_out['script_hex'], version_byte=111 ) 
 
             # unspent output was consumed by this transaction
             if self.unspents.has_key( ref_addr ):

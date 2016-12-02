@@ -21,7 +21,8 @@
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from pybitcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
+#from pybitcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
+from pyreddcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
     ReddcoinPublicKey, get_unspents, script_hex_to_address, hex_hash160, broadcast_transaction, serialize_transaction, \
     make_op_return_outputs, make_op_return_script
 

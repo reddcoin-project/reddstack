@@ -21,7 +21,8 @@
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from pybitcoin import embed_data_in_blockchain, make_op_return_tx, make_op_return_outputs, \
+#from pybitcoin import embed_data_in_blockchain, make_op_return_tx, make_op_return_outputs, \
+from pyreddcoin import embed_data_in_blockchain, make_op_return_tx, make_op_return_outputs, \
         make_op_return_script, broadcast_transaction, serialize_transaction, \
         script_hex_to_address, get_unspents
 from utilitybelt import is_hex

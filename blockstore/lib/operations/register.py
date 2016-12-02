@@ -20,13 +20,14 @@
     You should have received a copy of the GNU General Public License
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
-
-from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+#from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+from pyreddcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, hex_hash160, \
     ReddcoinPrivateKey, get_unspents, script_hex_to_address
 
-from pybitcoin.transactions.outputs import calculate_change_amount
+#from pyreddcoin.transactions.outputs import calculate_change_amount
+from pyreddcoin.transactions.outputs import calculate_change_amount
 from utilitybelt import is_hex
 from binascii import hexlify, unhexlify
 
