@@ -642,7 +642,9 @@ class BlockstoreDB( virtualchain.StateEngine ):
 
           if offset == 0:
               namespace_names.append( name )
-              if len(namespace_names) >= count:
+              if count == None:
+                  continue
+              elif len(namespace_names) >= count:
                   break
 
           else:
