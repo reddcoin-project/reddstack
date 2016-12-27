@@ -135,18 +135,22 @@ def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=N
          "value": calculate_change_amount(change_inputs, 0, 0)},
     ]
 
-    
-    if renewal_fee is not None:
-        outputs.append(
-            
-            # Reddcoin not using burn address (when renewing)
-            # {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
-            #  "value": renewal_fee}
-        )
+    donation_fee = 0
+
+    if BLOCKSTORE_DONATION_ADDRESS is not None:
+        if BLOCKSTORE_DONATION_PERCENT > 0:
+            if renewal_fee is not None:
+                donation_fee = renewal_fee * BLOCKSTORE_DONATION_PERCENT
+
+                outputs.append(
+                    # Reddcoin donation address
+                    {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
+                    "value": donation_fee}
+                )
 
     if pay_fee:
         dust_fee = tx_dust_fee_from_inputs_and_outputs( change_inputs, outputs )
-        outputs[2]['value'] = calculate_change_amount( change_inputs, bill, dust_fee )
+        outputs[2]['value'] = calculate_change_amount( change_inputs, bill + donation_fee, dust_fee )
 
     return outputs
     
