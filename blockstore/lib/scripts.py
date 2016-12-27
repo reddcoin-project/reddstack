@@ -252,7 +252,6 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
             
     # make the transaction 
     unsigned_tx = pyreddcoin.serialize_transaction( inputs, outputs )
-    print("tx_serialize_&_sign: Un_TX :: = %s" % unsigned_tx)
     
     # sign with the appropriate private keys 
     for i in xrange(0, len(inputs)):
