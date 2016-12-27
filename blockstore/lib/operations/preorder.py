@@ -176,6 +176,8 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
     if values <= fee:
         return {"Error": "Available funds %s less than fee %s" % (values, fee)}
 
+    inputs = best_fit_selection(fee, inputs)
+
 
     nulldata = build( name, script_pubkey, register_addr, consensus_hash, testset=testset)
     outputs = make_outputs(nulldata, inputs, from_address, fee, format='hex')

@@ -135,7 +135,6 @@ def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=N
          "value": calculate_change_amount(change_inputs, 0, 0)},
     ]
 
-    donation_fee = 0
     
     if renewal_fee is not None:
         outputs.append(
@@ -147,7 +146,7 @@ def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=N
 
     if pay_fee:
         dust_fee = tx_dust_fee_from_inputs_and_outputs( change_inputs, outputs )
-        outputs[2]['value'] = calculate_change_amount( change_inputs, bill - donation_fee, dust_fee )
+        outputs[2]['value'] = calculate_change_amount( change_inputs, bill, dust_fee )
 
     return outputs
     
@@ -195,7 +194,9 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
         
         # get inputs and from address using private key
         private_key_obj, from_address, change_inputs = analyze_private_key(private_key, blockchain_client)
-        
+
+    change_inputs = best_fit_selection(renewal_fee, change_inputs)
+
     nulldata = build(name, testset=testset)
     outputs = make_outputs(nulldata, change_inputs, register_addr, from_address, renewal_fee=renewal_fee, pay_fee=(not subsidized_renewal), format='hex')
    

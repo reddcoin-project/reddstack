@@ -348,6 +348,43 @@ def tx_analyze_inputs( inputs, bitcoind_opts ):
         
     return ret_inputs
     
+def best_fit_selection(amount, unspents):
+    print ("in Best Fit")
+    value = 0
+    unspent_candidates = []
+
+    if amount is not None:
+        amount = max( amount, DEFAULT_DUST_FEE ) + DEFAULT_DUST_FEE
+    else:
+        #use DEFAULT_DUST_FEE as the amount we need
+        amount = DEFAULT_DUST_FEE
+
+
+    while value < amount:
+        difference = amount - value
+        print ("Amount - Difference = %i" % difference)
+        # find the first smaller transaction
+        for tx in unspents:
+            tx_amount = tx['value']
+            if tx_amount < difference:
+                print ("looking for smaller tx candidates")
+                print ("tx amount = %i" % tx_amount)
+                value += tx_amount
+                unspent_candidates.append(tx)
+                break
+        # find the first bigger transaction
+        for tx in unspents:
+            tx_amount = tx['value']
+            if tx_amount > difference:
+                print ("looking for larger tx candidates")
+                print ("tx amount = %i" % tx_amount)
+                value += tx_amount
+                unspent_candidates.append(tx)
+                break
+
+    print ("Bestfit candidates = %s" % unspent_candidates)
+
+    return unspent_candidates
 
 def tx_dust_fee( tx_hex ):
     """
