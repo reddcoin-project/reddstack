@@ -41,6 +41,8 @@ import binascii
 import copy
 import threading 
 
+import gc
+
 import virtualchain
 
 if not globals().has_key('log'):
@@ -54,7 +56,7 @@ except:
 
 from ConfigParser import SafeConfigParser
 
-import pybitcoin
+import pyreddcoin
 from txjsonrpc.netstring import jsonrpc
 
 from lib import nameset as blockstore_state_engine
@@ -365,7 +367,7 @@ def broadcast_subsidized_tx( subsidized_tx ):
         return {"error": "Failed to connect to blockchain transaction broadcaster"}
 
     # broadcast
-    response = pybitcoin.broadcast_transaction( subsidized_tx, broadcaster_client_inst, format='hex' )
+    response = pyreddcoin.broadcast_transaction( subsidized_tx, broadcaster_client_inst, format='hex' )
     return response
 
 
@@ -528,7 +530,7 @@ def blockstore_name_preorder_multi( name_list, privatekey, register_addr_list, t
         tx_only = True
 
         # the sender will be the subsidizer (otherwise it will be the given private key's owner)
-        public_key = BitcoinPrivateKey( subsidy_key ).public_key().to_hex()
+        public_key = ReddcoinPrivateKey( subsidy_key ).public_key().to_hex()
 
     try:
         resp = preorder_name_multi(name_list, privatekey, register_addr_list, str(consensus_hash), blockchain_client_inst, \
@@ -766,7 +768,7 @@ def blockstore_name_renew( name, privatekey, register_addr=None, tx_only=False, 
     if register_addr is None:
         register_addr = name_rec['address']
 
-    if str(register_addr) != str(pybitcoin.ReddcoinPrivateKey( privatekey ).public_key().address()):
+    if str(register_addr) != str(pyreddcoin.ReddcoinPrivateKey( privatekey ).public_key().address()):
         return {"error": "Only the name's owner can send a renew request"}
 
     renewal_fee = get_name_cost( name )
@@ -977,7 +979,7 @@ def blockstore_announce( message, privatekey, tx_only=False, subsidy_key=None, u
     if broadcaster_client_inst is None:
         return {"error": "Failed to connect to blockchain transaction broadcaster"}
 
-    message_hash = pybitcoin.hex_hash160( message )
+    message_hash = pyreddcoin.hex_hash160( message )
 
     try:
         resp = send_announce( message_hash, privatekey, blockchain_client_inst, \
@@ -1848,6 +1850,9 @@ class IndexerThread( threading.Thread ):
 
             set_indexing( False )
 
+            collected = gc.collect()
+            log.debug("Garbage collector: collected %d objects." % (collected))
+
             deadline = time.time() + REINDEX_FREQUENCY
             while time.time() < deadline and self.running:
                 time.sleep(0.5)
@@ -1961,6 +1966,7 @@ def run_server( testset=False, foreground=False ):
     for sig in [signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
         signal.signal( sig, die_handler_server )
 
+    log.info("\n\n\n### Starting server ###\n\n")
     # put supervisor pid file
     put_pidfile( pid_file, os.getpid() )
 
@@ -1981,7 +1987,7 @@ def run_server( testset=False, foreground=False ):
         logfile.flush()
         logfile.close()
 
-    return blockstore_api_server.returncode
+    return blockstored_api_server.returncode
 
 
 def setup( working_dir=None, testset=False, return_parser=False ):
