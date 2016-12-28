@@ -1131,6 +1131,35 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         reply['testset'] = str(self.testset)
         return reply
 
+    def jsonrpc_gettxinfo(self, tx_id):
+        """
+        Get the tx details
+        """
+        bitcoind_opts = default_bitcoind_opts( virtualchain.get_config_filename() )
+        bitcoind = get_bitcoind( new_bitcoind_opts=bitcoind_opts, new=True )
+
+        reply = {}
+        reply['bitcoind_blockhash'] = 'null'
+        reply['confirmations'] = 0
+        reply['blocktime'] = 'null'
+
+        try:
+          txinfo = bitcoind.getrawtransaction(tx_id, 1)
+        except:
+          return reply
+          #return json_traceback()
+ 
+
+
+        if 'blockhash' in txinfo:
+          reply['bitcoind_blockhash'] = txinfo['blockhash']
+          reply['confirmations'] = txinfo['confirmations']
+          reply['blocktime'] = txinfo['blocktime']
+
+        db = get_state_engine()
+        reply['last_block'] = db.get_current_block()
+        return reply
+
 
     def jsonrpc_get_names_owned_by_address(self, address):
         """
