@@ -21,11 +21,13 @@
     along with Blockstore. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+#from pybitcoin import embed_data_in_blockchain, serialize_transaction, \
+from pyreddcoin import embed_data_in_blockchain, serialize_transaction, \
     analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
     make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, hex_hash160
 
-from pybitcoin.transactions.outputs import calculate_change_amount
+#from pyreddcoin.transactions.outputs import calculate_change_amount
+from pyreddcoin.transactions.outputs import calculate_change_amount
 
 from utilitybelt import is_hex
 from binascii import hexlify, unhexlify
@@ -108,16 +110,19 @@ def make_outputs( data, inputs, change_addr, op_fee, format='bin' ):
         
         # change address
         {"script_hex": make_pay_to_address_script(change_addr),
-         "value": calculate_change_amount(inputs, 0, 0)},
+         "value": calculate_change_amount(inputs, 0, 0) - op_fee},
         
         # burn address
-        {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
-         "value": op_fee}
+        # Reddcoin not using burn
+        # {"script_hex": make_pay_to_address_script(BLOCKSTORE_BURN_ADDRESS),
+        # "value": op_fee}
     ]
 
-    print "Outputs == " + str(outputs)
+    log.debug("Reddcoin: Make_Outputs == %s" % outputs)
     
-    dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
+    # Reddcoin, no dust fee include
+    # dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
+    dust_fee = 0
     outputs[1]['value'] = calculate_change_amount( inputs, op_fee, dust_fee )
 
     return outputs 
@@ -143,7 +148,7 @@ def broadcast( namespace_id, register_addr, consensus_hash, private_key, blockch
    testnet_pubkey = ReddcoinPrivateKey( private_key ).public_key()
       
    script_pubkey = get_script_pubkey( pubkey_hex )
-   log.debug("Reddcoin: Testnet Public Key == %s" % testnet_pubkey)
+   log.debug("Reddcoin: Testnet Public Key == %s" % testnet_pubkey.address())
    log.debug("Are we on Testnet == %s" % TESTNET)
 
    nulldata = build( namespace_id, script_pubkey, register_addr, consensus_hash, testset=testset )
