@@ -22,9 +22,14 @@
 """
 
 #from pybitcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
-from pyreddcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
-    ReddcoinPublicKey, get_unspents, script_hex_to_address, hex_hash160, broadcast_transaction, serialize_transaction, \
-    make_op_return_outputs, make_op_return_script
+#from pyreddcoin import embed_data_in_blockchain, make_op_return_tx, BlockchainInfoClient, ReddcoinPrivateKey, \
+#    ReddcoinPublicKey, get_unspents, script_hex_to_address, hex_hash160, broadcast_transaction, serialize_transaction, \
+#    make_op_return_outputs, make_op_return_script
+from pyreddcoin import embed_data_in_blockchain, serialize_transaction, \
+    analyze_private_key, serialize_sign_and_broadcast, make_op_return_script, \
+    make_pay_to_address_script, b58check_encode, b58check_decode, BlockchainInfoClient, \
+    hex_hash160, bin_hash160, ReddcoinPrivateKey, ReddcoinPublicKey, script_hex_to_address, get_unspents, \
+    make_op_return_outputs
 
 from utilitybelt import is_hex
 from binascii import hexlify, unhexlify
@@ -169,11 +174,15 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
 
     else:
        
-        signed_tx = tx_serialize_and_sign( inputs, outputs, private_key_obj )
-        response = broadcast_transaction( signed_tx, blockchain_broadcaster )
+        #signed_tx = tx_serialize_and_sign( inputs, outputs, private_key_obj )
+        #response = broadcast_transaction( signed_tx, blockchain_broadcaster )
+        #response.update({'data': nulldata})
+        #return response
+
+        # serialize, sign, and broadcast the tx
+        response = serialize_sign_and_broadcast(inputs, outputs, private_key_obj, blockchain_client)
         response.update({'data': nulldata})
         return response
-
 
 def parse(bin_payload):
     """
