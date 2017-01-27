@@ -24,7 +24,7 @@
 import os
 import sys
 from ConfigParser import SafeConfigParser
-import pybitcoin
+import pyreddcoin
 
 import virtualchain
 
@@ -41,13 +41,19 @@ TESTNET = True
 
 VERSION = "0.0.11"
 
+#Donation address
+BLOCKSTORE_DONATION_ADDRESS = 'n11v5q3STmdXazTk4dzxJxBc9LfLZXmwb1'
+BLOCKSTORE_DONATION_PERCENTAGE = 10
+BLOCKSTORE_DONATION_PERCENT = BLOCKSTORE_DONATION_PERCENTAGE * 0.01
+
+
 # namespace version
 BLOCKSTORE_VERSION = 1
 
 """ constants
 """
 
-AVERAGE_MINUTES_PER_BLOCK = 10
+AVERAGE_MINUTES_PER_BLOCK = 1
 DAYS_PER_YEAR = 365.2424
 HOURS_PER_DAY = 24
 MINUTES_PER_HOUR = 60
@@ -93,7 +99,7 @@ DEFAULT_BITCOIND_PASSWD = 'opennamesystem'
 
 """ block indexing configs
 """
-REINDEX_FREQUENCY = 300 # seconds
+REINDEX_FREQUENCY = 30 # 300 seconds
 
 FIRST_BLOCK_MAINNET = 70000
 FIRST_BLOCK_MAINNET_TESTSET = 70000
@@ -242,7 +248,8 @@ OP_RETURN_MAX_SIZE = 40
 """
 
 DEFAULT_OP_RETURN_FEE = 10000
-DEFAULT_DUST_FEE = 5500
+#DEFAULT_DUST_FEE = 55000
+DEFAULT_DUST_FEE = 1000000
 DEFAULT_OP_RETURN_VALUE = 0
 DEFAULT_FEE_PER_KB = 10000
 
@@ -255,12 +262,23 @@ PRICE_DROP_PER_LETTER = 10
 PRICE_DROP_FOR_NON_ALPHABETIC = 10
 ALPHABETIC_PRICE_FLOOR = 10**4
 
-NAME_COST_UNIT = 100    # 100 satoshis
+#NAME_COST_UNIT = 100    # 100 satoshis
+NAME_COST_UNIT = 100000000    # 100000000 satoshis (1 RDD)
 
-NAMESPACE_1_CHAR_COST = 400 * SATOSHIS_PER_BTC        # ~$96,000
-NAMESPACE_23_CHAR_COST = 40 * SATOSHIS_PER_BTC        # ~$9,600
-NAMESPACE_4567_CHAR_COST = 4 * SATOSHIS_PER_BTC       # ~$960
-NAMESPACE_8UP_CHAR_COST = 0.4 * SATOSHIS_PER_BTC      # ~$96
+#NAMESPACE_1_CHAR_COST = 400 * SATOSHIS_PER_BTC        # ~$96,000
+#NAMESPACE_23_CHAR_COST = 40 * SATOSHIS_PER_BTC        # ~$9,600
+#NAMESPACE_4567_CHAR_COST = 4 * SATOSHIS_PER_BTC       # ~$960
+#NAMESPACE_8UP_CHAR_COST = 0.4 * SATOSHIS_PER_BTC      # ~$96
+
+NAMESPACE_1_CHAR_COST = 50000000 * SATOSHIS_PER_BTC        # ~$2500.00
+NAMESPACE_23_CHAR_COST = 5000000 * SATOSHIS_PER_BTC        # ~ $250.00
+NAMESPACE_4567_CHAR_COST = 500000 * SATOSHIS_PER_BTC       # ~  $25.00
+NAMESPACE_8UP_CHAR_COST = 50000 * SATOSHIS_PER_BTC         # ~   $2.50
+
+# NAMESPACE_1_CHAR_COST = 10000
+# NAMESPACE_23_CHAR_COST = 10000
+# NAMESPACE_4567_CHAR_COST = 10000
+# NAMESPACE_8UP_CHAR_COST = 10000
 
 TESTSET_NAMESPACE_1_CHAR_COST = 10000
 TESTSET_NAMESPACE_23_CHAR_COST = 10000
@@ -523,7 +541,7 @@ def put_announcement( announcement_text, txid ):
     session = get_blockstore_client_session()   # has the side-effect of initializing all storage drivers, if they're not already
     data_hash = blockstore_client.storage.put_immutable_data( announcement_text, txid )
     if data_hash is None:
-        log.error("Failed to put announcement '%s'" % (pybitcoin.hex_hash160(announcement_text)))
+        log.error("Failed to put announcement '%s'" % (pyreddcoin.hex_hash160(announcement_text)))
         return None
 
     return data_hash
@@ -1475,16 +1493,16 @@ def connect_utxo_provider( utxo_opts ):
        raise Exception("Unsupported UTXO provider '%s'" % utxo_provider)
 
    if utxo_provider == "chain_com":
-       return pybitcoin.ChainComClient( utxo_opts['api_key_id'], utxo_opts['api_key_secret'] )
+       return pyreddcoin.ChainComClient( utxo_opts['api_key_id'], utxo_opts['api_key_secret'] )
 
    elif utxo_provider == "blockcypher":
-       return pybitcoin.BlockcypherClient( utxo_opts['api_token'] )
+       return pyreddcoin.BlockcypherClient( utxo_opts['api_token'] )
 
    elif utxo_provider == "blockchain_info":
-       return pybitcoin.BlockchainInfoClient( utxo_opts['api_token'] )
+       return pyreddcoin.BlockchainInfoClient( utxo_opts['api_token'] )
 
    elif utxo_provider == "bitcoind_utxo":
-       return pybitcoin.BitcoindClient( utxo_opts['rpc_username'], utxo_opts['rpc_password'], use_https=utxo_opts['use_https'], server=utxo_opts['server'], port=utxo_opts['port'], version_byte=utxo_opts['version_byte'] )
+       return pyreddcoin.BitcoindClient( utxo_opts['rpc_username'], utxo_opts['rpc_password'], use_https=utxo_opts['use_https'], server=utxo_opts['server'], port=utxo_opts['port'], version_byte=utxo_opts['version_byte'] )
 
    elif utxo_provider == "mock_utxo":
        # requires blockstore tests to be installed
