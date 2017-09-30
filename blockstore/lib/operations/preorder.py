@@ -124,7 +124,8 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
             )
 
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
-    outputs[1]['value'] = calculate_change_amount( inputs, op_fee+donation_fee, dust_fee )
+    fee = round(float(op_fee+donation_fee))
+    outputs[1]['value'] = calculate_change_amount( inputs, fee, dust_fee )
     return outputs
 
 
@@ -174,7 +175,7 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
         values += inp["value"]
 
     if values <= fee:
-        return {"Error": "Available funds %s less than fee %s" % (values, fee)}
+        return {"error": "Available funds %.0f less than fee %.0f rdd" % (values / SATOSHIS_PER_BTC, fee / SATOSHIS_PER_BTC)}
 
     inputs = best_fit_selection(fee, inputs)
 
