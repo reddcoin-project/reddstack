@@ -34,7 +34,8 @@ from virtualchain import getrawtransaction
 if not globals().has_key('log'):
     log = virtualchain.session.log
 
-import bitcoin
+#import bitcoin
+import pyreddcointools
 import json
 
 try:
@@ -143,7 +144,7 @@ def tx_deserialize( tx_hex ):
     * script_hex: string 
     """
     
-    tx = bitcoin.deserialize( tx_hex )
+    tx = pyreddcointools.deserialize( tx_hex )
     inputs = tx["ins"]
     outputs = tx["outs"]
     
@@ -228,7 +229,7 @@ def tx_serialize( inputs, outputs, locktime, version ):
         "outs": tmp_outputs
     }
     
-    return bitcoin.serialize( txobj )
+    return pyreddcointools.serialize( txobj )
     
 
 def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
@@ -255,7 +256,7 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
     
     # sign with the appropriate private keys 
     for i in xrange(0, len(inputs)):
-        signed_tx = bitcoin.sign( unsigned_tx, i, private_key_objs[i].to_hex() )
+        signed_tx = pyreddcointools.sign( unsigned_tx, i, private_key_objs[i].to_hex() )
         unsigned_tx = signed_tx 
         
     return unsigned_tx 
@@ -363,7 +364,7 @@ def best_fit_selection(amount, unspents):
     while value < amount:
         difference = amount - value
         print ("Amount - Difference = %i" % difference)
-        # find the first smaller transaction
+        # find first the smaller transactions
         for tx in unspents:
             tx_amount = tx['value']
             if tx_amount < difference:
@@ -371,6 +372,7 @@ def best_fit_selection(amount, unspents):
                 print ("tx amount = %i" % tx_amount)
                 value += tx_amount
                 unspent_candidates.append(tx)
+                unspents.remove(tx)
                 break
         # find the first bigger transaction
         for tx in unspents:
@@ -380,6 +382,7 @@ def best_fit_selection(amount, unspents):
                 print ("tx amount = %i" % tx_amount)
                 value += tx_amount
                 unspent_candidates.append(tx)
+                unspents.remove(tx)
                 break
 
     print ("Bestfit candidates = %s" % unspent_candidates)
@@ -422,7 +425,7 @@ def tx_serialize_subsidized_tx( blockstore_tx, payer_privkey_hex, payer_utxo_inp
     # sign each of our inputs with our key, but use SIGHASH_ANYONECANPAY so the client can sign its inputs
     for i in xrange( 0, len(payer_utxo_inputs)):
         idx = i + len(tx_inputs)
-        subsidized_tx = bitcoin.sign( subsidized_tx, idx, payer_privkey_hex, hashcode=bitcoin.SIGHASH_ANYONECANPAY )
+        subsidized_tx = pyreddcointools.sign( subsidized_tx, idx, payer_privkey_hex, hashcode=pyreddcointools.SIGHASH_ANYONECANPAY )
     
     return subsidized_tx
 
