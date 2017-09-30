@@ -67,6 +67,7 @@ NAME_PREORDER_EXPIRE = BLOCKS_PER_DAY
 NAME_PREORDER_MULTI_EXPIRE = 7 * BLOCKS_PER_DAY
 # EXPIRATION_PERIOD = 10
 AVERAGE_BLOCKS_PER_HOUR = MINUTES_PER_HOUR/AVERAGE_MINUTES_PER_BLOCK
+COIN = 10000000
 
 """ blockstore configs
 """
@@ -325,11 +326,12 @@ NAMESPACE_DEFAULT = {
 
 """ UTXOs
 """
-SUPPORTED_UTXO_PROVIDERS = [ "chain_com", "blockcypher", "blockchain_info", "bitcoind_utxo", "mock_utxo" ]
+SUPPORTED_UTXO_PROVIDERS = [ "chain_com", "blockcypher", "blockchain_info", "reddcoin_com", "bitcoind_utxo", "mock_utxo" ]
 SUPPORTED_UTXO_PARAMS = {
     "chain_com": ["api_key_id", "api_key_secret"],
     "blockcypher": ["api_token"],
     "blockchain_info": ["api_token"],
+    "reddcoin_com": [],
     "bitcoind_utxo": ["rpc_username", "rpc_password", "server", "port", "use_https", "version_byte"],
     "mock_utxo": []
 }
@@ -338,6 +340,7 @@ SUPPORTED_UTXO_PROMPT_MESSAGES = {
     "chain_com": "Please enter your chain.com API key and secret.",
     "blockcypher": "Please enter your Blockcypher API token.",
     "blockchain_info": "Please enter your blockchain.info API token.",
+    "reddcoin_com": "Reddcoin explorer",
     "bitcoind_utxo": "Please enter your fully-indexed bitcoind node information.",
     "mock_utxo": "Mock UTXO provider.  Do not use in production."
 }
@@ -797,6 +800,9 @@ def default_utxo_provider_opts( utxo_provider, config_file=None ):
    elif utxo_provider == "blockchain_info":
        return default_blockchain_info_opts( config_file=config_file )
 
+   elif utxo_provider == "reddcoin_com":
+       return default_reddcoin_com_opts( config_file=config_file )
+
    elif utxo_provider == "bitcoind_utxo":
        return default_bitcoind_utxo_opts( config_file=config_file )
 
@@ -912,6 +918,37 @@ def default_blockchain_info_opts( config_file=None ):
 
    return blockchain_info_opts
 
+def default_reddcoin_com_opts( config_file=None ):
+   """
+   Get our default blockchain.info options from a config file.
+   """
+
+   if config_file is None:
+       config_file = virtualchain.get_config_filename()
+
+   parser = SafeConfigParser()
+   parser.read( config_file )
+
+   reddcoin_com_opts = {}
+
+   api_token = None
+
+   if parser.has_section("reddcoin_com"):
+
+       if parser.has_option("reddcoin_com", "api_token"):
+           api_token = parser.get("reddcoin_com", "api_token")
+
+   reddcoin_com_opts = {
+       "utxo_provider": "reddcoin_com",
+       "api_token": api_token
+   }
+
+   # strip Nones
+   for (k, v) in reddcoin_com_opts.items():
+      if v is None:
+         del reddcoin_com_opts[k]
+
+   return reddcoin_com_opts
 
 def default_bitcoind_utxo_opts( config_file=None ):
    """
@@ -1470,7 +1507,6 @@ def write_config_file( blockstore_opts=None, bitcoind_opts=None, utxo_opts=None,
 
           parser.set( "blockstore", opt_name, "%s" % opt_value )
 
-
    with open(config_file, "w") as fout:
       os.fchmod( fout.fileno(), 0600 )
       parser.write( fout )
@@ -1482,7 +1518,6 @@ def connect_utxo_provider( utxo_opts ):
    """
    Set up and return a UTXO provider client.
    """
-
    global SUPPORTED_UTXO_PROVIDERS
 
    if not utxo_opts.has_key("utxo_provider"):
@@ -1500,6 +1535,9 @@ def connect_utxo_provider( utxo_opts ):
 
    elif utxo_provider == "blockchain_info":
        return pyreddcoin.BlockchainInfoClient( utxo_opts['api_token'] )
+
+   elif utxo_provider == "reddcoin_com":
+       return pyreddcoin.ReddcoinComClient( utxo_opts['api_token'] )
 
    elif utxo_provider == "bitcoind_utxo":
        return pyreddcoin.BitcoindClient( utxo_opts['rpc_username'], utxo_opts['rpc_password'], use_https=utxo_opts['use_https'], server=utxo_opts['server'], port=utxo_opts['port'], version_byte=utxo_opts['version_byte'] )
