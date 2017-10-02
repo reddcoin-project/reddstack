@@ -397,7 +397,7 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_registration_recipient_from_outputs( outputs )
-         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=111 )
+         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=61 )
       except Exception, e:
          log.exception(e)
          raise Exception("No registration address for (%s, %s)" % (opcode, hexlify(data)))
@@ -407,7 +407,7 @@ def db_parse( block_id, opcode, data, senders, inputs, outputs, fee, db_state=No
       # these operations have a designated recipient that is *not* the sender
       try:
          recipient = get_transfer_recipient_from_outputs( outputs )
-         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=111 )
+         recipient_address = pyreddcoin.script_hex_to_address( recipient, version_byte=61 )
       except Exception, e:
          log.exception(e)
          raise Exception("No recipient for (%s, %s)" % (opcode, hexlify(data)))

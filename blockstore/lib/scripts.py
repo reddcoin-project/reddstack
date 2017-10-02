@@ -295,7 +295,7 @@ def tx_output_is_burn( output ):
     """
     Is an output's script an OP_RETURN script to our burn address?
     """
-    addr = pyreddcoin.script_hex_to_address( output['script_hex'], version_byte=111 )
+    addr = pyreddcoin.script_hex_to_address( output['script_hex'], version_byte=61 )
     return (addr == BLOCKSTORE_BURN_ADDRESS)
 
 

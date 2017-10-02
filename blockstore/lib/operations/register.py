@@ -263,17 +263,17 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: reveal address 
-    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=61 ) is None:
         return (None, None)
     
     # 2: change address 
-    if script_hex_to_address( outputs[2]["script_hex"], version_byte=111 ) is None:
+    if script_hex_to_address( outputs[2]["script_hex"], version_byte=61 ) is None:
         return (None, None)
     
     # 3: burn address, if given 
     if len(outputs) == 4:
         
-        addr_hash = script_hex_to_address( outputs[3]["script_hex"], version_byte=111 )
+        addr_hash = script_hex_to_address( outputs[3]["script_hex"], version_byte=61 )
         if addr_hash is None:
             return (None, None) 
         

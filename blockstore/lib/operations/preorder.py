@@ -239,12 +239,12 @@ def get_fees( inputs, outputs ):
         return (None, None) 
     
     # 1: change address 
-    if script_hex_to_address( outputs[1]["script_hex"], version_byte=111 ) is None:
+    if script_hex_to_address( outputs[1]["script_hex"], version_byte=61 ) is None:
         log.error("outputs[1] has no decipherable change address")
         return (None, None)
     
     # 2: burn address 
-    addr_hash = script_hex_to_address( outputs[2]["script_hex"], version_byte=111 )
+    addr_hash = script_hex_to_address( outputs[2]["script_hex"], version_byte=61 )
     if addr_hash is None:
         log.error("outputs[2] has no decipherable burn address")
         return (None, None) 
