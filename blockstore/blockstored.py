@@ -371,7 +371,7 @@ def broadcast_subsidized_tx( subsidized_tx ):
     return response
 
 
-def blockstore_name_preorder( name, privatekey, register_addr, tx_only=False, subsidy_key=None, testset=False, consensus_hash=None ):
+def blockstore_name_preorder( name, privatekey, register_addr, tx_only=False, subsidy_key=None, user_public_key=None, testset=False, consensus_hash=None ):
     """
     Preorder a name.
 
