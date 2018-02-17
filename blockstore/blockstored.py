@@ -1215,6 +1215,20 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         return blockstore_name_preorder( str(name), None, str(register_addr), tx_only=True, subsidy_key=str(subsidy_key), user_public_key=str(user_public_key), testset=self.testset )
 
 
+    def jsonrpc_preorder_tx_unsigned( self, name, user_public_key, register_addr ):
+        """
+        Generate a transaction that preorders a name, but without signing the tx.
+        @name is the name to preorder
+        @register_addr is the address of the key pair that will own the name
+        @user_public_key is the client's public key that will later sign the preorder transaction
+        (it must be *different* from the register_addr keypair)
+
+        Return a JSON object with the unsigned serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+        return blockstore_name_preorder( str(name), None, str(register_addr), tx_only=True, user_public_key=str(user_public_key), testset=self.testset )
+
+
     def jsonrpc_register( self, name, privatekey, register_addr ):
         """
         Register a name:
@@ -1257,6 +1271,20 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         return blockstore_name_register( str(name), None, str(register_addr), tx_only=True, public_key=str(user_public_key), subsidy_key=str(subsidy_key), testset=self.testset )
 
 
+    def jsonrpc_register_tx_unsigned( self, name, user_public_key, register_addr ):
+        """
+        Generate a subsidizable transaction that will register a name
+        @name is the name to register
+        @register_addr is the address of the key pair that will own the name
+        (given earlier in the preorder)
+        @user_public_key is the public key whose private counterpart sent the preorder transaction.
+
+        Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+        return blockstore_name_register( str(name), None, str(register_addr), tx_only=True, public_key=str(user_public_key) testset=self.testset )
+
+
     def jsonrpc_update( self, name, data_hash, privatekey ):
         """
         Update a name's record:
@@ -1294,6 +1322,19 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         Return a JSON object with 'error' on error.
         """
         return blockstore_name_update( str(name), str(data_hash), None, user_public_key=str(user_public_key), subsidy_key=str(subsidy_key), tx_only=True, testset=self.testset )
+
+
+    def jsonrpc_update_tx_unsigned( self, name, data_hash, user_public_key ):
+        """
+        Generate a subsidizable transaction that will update a name's name record hash.
+        @name is the name to update
+        @data_hash is the hash of the new name record
+        @user_public_key is the public key whose private counterpart sent the update transaction.
+
+        Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+        return blockstore_name_update( str(name), str(data_hash), None, user_public_key=str(user_public_key), tx_only=True, testset=self.testset )
 
 
     def jsonrpc_transfer( self, name, address, keepdata, privatekey ):
@@ -1365,6 +1406,29 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         return blockstore_name_transfer( str(name), str(address), keepdata, None, user_public_key=str(user_public_key), subsidy_key=str(subsidy_key), tx_only=True, testset=self.testset )
 
 
+    def jsonrpc_transfer_tx_unsigned( self, name, address, keepdata, user_public_key ):
+        """
+        Generate a subsidizable transaction that will transfer a name to a new address
+        @name is the name to transfer
+        @address is the new address that will own the name
+        @keepdata determines whether or not the name record will
+        remain associated with the name on transfer.
+        @privatekey is the private key that owns the name
+
+        Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+
+        # coerce boolean
+        if type(keepdata) != bool:
+            if str(keepdata) == "True":
+                keepdata = True
+            else:
+                keepdata = False
+
+        return blockstore_name_transfer( str(name), str(address), keepdata, None, user_public_key=str(user_public_key), tx_only=True, testset=self.testset )
+
+
     def jsonrpc_renew( self, name, privatekey ):
         """
         Renew a name:
@@ -1401,6 +1465,18 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         return blockstore_name_renew( name, None, user_public_key=str(user_public_key), subsidy_key=str(subsidy_key), tx_only=True, testset=self.testset )
 
 
+    def jsonrpc_renew_tx_unsigned( self, name, user_public_key ):
+        """
+        Generate a subsidizable transaction that will register a name
+        @name is the name to renew
+        @privatekey is the private key that owns the name
+
+        Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+        return blockstore_name_renew( name, None, user_public_key=str(user_public_key), tx_only=True, testset=self.testset )
+
+
     def jsonrpc_revoke( self, name, privatekey ):
         """
         revoke a name:
@@ -1435,6 +1511,19 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         Return a JSON object with 'error' on error.
         """
         return blockstore_name_revoke( str(name), None, user_public_key=str(user_public_key), subsidy_key=str(subsidy_key), tx_only=True, testset=self.testset )
+
+
+    def jsonrpc_revoke_tx_unsigned( self, name, public_key ):
+        """
+        Generate a subsidizable transaction that will revoke a name
+        @name is the name to revoke
+        @privatekey is the private key that owns the name
+
+        Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
+        Return a JSON object with 'error' on error.
+        """
+        return blockstore_name_revoke( str(name), None, user_public_key=str(user_public_key), tx_only=True, testset=self.testset )
+
 
 
     def jsonrpc_name_import( self, name, recipient_address, update_hash, privatekey ):
