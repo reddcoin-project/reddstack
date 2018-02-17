@@ -1282,7 +1282,7 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         Return a JSON object with the signed serialized transaction on success.  It will not be broadcast.
         Return a JSON object with 'error' on error.
         """
-        return blockstore_name_register( str(name), None, str(register_addr), tx_only=True, public_key=str(user_public_key) testset=self.testset )
+        return blockstore_name_register( str(name), None, str(register_addr), tx_only=True, public_key=str(user_public_key), testset=self.testset )
 
 
     def jsonrpc_update( self, name, data_hash, privatekey ):
