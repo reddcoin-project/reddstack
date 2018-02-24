@@ -37,6 +37,7 @@ if not globals().has_key('log'):
 #import bitcoin
 import pyreddcointools
 import json
+import time
 
 try:
     from .config import *
@@ -193,6 +194,8 @@ def tx_serialize( inputs, outputs, locktime=0, version=TX_VERSION ):
     
     tmp_inputs = []
     tmp_outputs = []
+
+    timestamp = int(time.time())
     
     # convert to a format bitcoin understands
     for inp in inputs:
@@ -223,6 +226,7 @@ def tx_serialize( inputs, outputs, locktime=0, version=TX_VERSION ):
         tmp_outputs.append( tmp_out )
         
     txobj = {
+        "time": timestamp,
         "locktime": locktime,
         "version": version,
         "ins": tmp_inputs,
@@ -252,7 +256,7 @@ def tx_serialize_and_sign_multi( inputs, outputs, private_keys ):
             private_key_objs.append( pyreddcoin.ReddcoinPrivateKey( pk ) )
             
     # make the transaction 
-    unsigned_tx = pyreddcoin.serialize_transaction( inputs, outputs )
+    unsigned_tx = tx_serialize( inputs, outputs )
     
     # sign with the appropriate private keys 
     for i in xrange(0, len(inputs)):
