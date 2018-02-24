@@ -120,12 +120,12 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
             outputs.append(
                 # Reddcoin donation address
                 {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
-                 "value": donation_fee}
+                 "value": int(donation_fee)}
             )
 
     dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
     fee = round(float(op_fee+donation_fee))
-    outputs[1]['value'] = calculate_change_amount( inputs, fee, dust_fee )
+    outputs[1]['value'] = int(calculate_change_amount( inputs, fee, dust_fee ))
     return outputs
 
 
