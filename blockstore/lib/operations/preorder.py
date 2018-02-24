@@ -129,7 +129,7 @@ def make_outputs( data, inputs, sender_addr, op_fee, format='bin' ):
     return outputs
 
 
-def broadcast(name, private_key, register_addr, consensus_hash, blockchain_client, fee, blockchain_broadcaster=None, subsidy_public_key=None, tx_only=False, testset=False):
+def broadcast(name, private_key, register_addr, consensus_hash, blockchain_client, fee, blockchain_broadcaster=None, subsidy_public_key=None, user_public_key=None, tx_only=False, testset=False):
     """
     Builds and broadcasts a preorder transaction.
 
@@ -139,10 +139,17 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
     if subsidy_public_key is not None:
         # subsidizing, and only want the tx 
         tx_only = True
+
+    if user_public_key is not None:
+        # not signing the transactoin, and only want the tx 
+        tx_only = True
     
     # sanity check 
-    if subsidy_public_key is None and private_key is None:
-        raise Exception("Missing both client public and private key")
+    if user_public_key is None and private_key is None:
+        raise Exception("Missing both user public and private key")
+    elif subsidy_public_key is None and private_key is None and user_public_key is None:
+        raise Exception("Missing subsidy public, and private key and user key")
+    
     
     if blockchain_broadcaster is None:
         blockchain_broadcaster = blockchain_client 
@@ -160,6 +167,15 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
 
         inputs = get_unspents( from_address, blockchain_client )
         script_pubkey = get_script_pubkey( subsidy_public_key )
+
+    elif user_public_key is not None:
+        #dont have priv key, making an unsigned transaction
+        pubk = ReddcoinPublicKey( user_public_key )
+        
+        from_address = ReddcoinPublicKey( user_public_key ).address()
+
+        inputs = get_unspents( from_address, blockchain_client )
+        script_pubkey = get_script_pubkey( user_public_key )
 
     else:
         # ordering directly

@@ -433,9 +433,15 @@ def blockstore_name_preorder( name, privatekey, register_addr, tx_only=False, su
         # the sender will be the subsidizer (otherwise it will be the given private key's owner)
         public_key = ReddcoinPrivateKey( subsidy_key ).public_key().to_hex()
 
+    if user_public_key is not None:
+        user_public_key = str(user_public_key)
+        tx_only = True
+
+    log.debug("Reg Addr = %s and User key = %s and Sub Key = %s" % (str(register_addr),user_public_key,public_key))
+
     try:
         resp = preorder_name(str(name), privatekey, str(register_addr), str(consensus_hash), blockchain_client_inst, \
-            name_fee, testset=blockstore_opts['testset'], subsidy_public_key=public_key, tx_only=tx_only )
+            name_fee, testset=blockstore_opts['testset'], subsidy_public_key=public_key, user_public_key=user_public_key, tx_only=tx_only )
     except:
         return json_traceback()
 
