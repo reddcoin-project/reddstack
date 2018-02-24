@@ -176,7 +176,7 @@ def tx_deserialize( tx_hex ):
     return ret_inputs, ret_outputs, tx["locktime"], tx["version"]
 
 
-def tx_serialize( inputs, outputs, locktime, version ):
+def tx_serialize( inputs, outputs, locktime=0, version=TX_VERSION ):
     """
     Given (possibly signed) inputs and outputs, convert them 
     into a hex string.

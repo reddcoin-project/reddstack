@@ -40,6 +40,7 @@ DEBUG = True
 TESTNET = False
 
 VERSION = "0.0.11"
+TX_VERSION = 2 # Version of TX (PoSV >= 2)
 
 #Donation address
 BLOCKSTORE_DONATION_ADDRESS = 'RiRejEm9Ry6BycdS3jh5QzHHA3UZ25Zv2D'
