@@ -198,11 +198,14 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
 
     nulldata = build( name, script_pubkey, register_addr, consensus_hash, testset=testset)
     outputs = make_outputs(nulldata, inputs, from_address, fee, format='hex')
+    tx_data = {}
+    tx_data["inputs"] = inputs
+    tx_data["outputs"] = outputs
     
     if tx_only:
 
-        unsigned_tx = serialize_transaction( inputs, outputs )
-        return {"unsigned_tx": unsigned_tx}
+        unsigned_tx = tx_serialize( inputs, outputs )
+        return {"unsigned_tx": unsigned_tx, "tx_data": tx_data}
     
     else:
         # serialize, sign, and broadcast the tx
