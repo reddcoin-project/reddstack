@@ -40,7 +40,7 @@ setup(
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        'virtualchain>=0.0.8',
+        'virtualchain>=0.0.9',
         'kademlia>=0.5',
         'keychain>=0.1.4',
         'blockstore-client>=0.0.12.1',
