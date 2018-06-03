@@ -43,7 +43,7 @@ setup(
         'virtualchain>=0.0.9',
         'kademlia>=0.5',
         'keychain>=0.1.4',
-        'blockstore-client>=0.0.12.1',
+        'blockstore-client>=0.0.12.2',
         'pyreddcoin>=0.9.9'
     ],
     classifiers=[
