@@ -158,6 +158,8 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
     inputs = None
     private_key_obj = None
     script_pubkey = None    # to be mixed into preorder hash
+
+    log.debug("Determining Inputs...")
     
     if subsidy_public_key is not None:
         # subsidizing
@@ -193,9 +195,10 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
     if values <= fee:
         return {"error": "Available funds %.0f less than fee %.0f rdd" % (values / SATOSHIS_PER_BTC, fee / SATOSHIS_PER_BTC)}
 
+    log.debug("Determining Selection...")
     inputs = best_fit_selection(fee, inputs)
 
-
+    log.debug("Build tx...")
     nulldata = build( name, script_pubkey, register_addr, consensus_hash, testset=testset)
     outputs = make_outputs(nulldata, inputs, from_address, fee, format='hex')
     tx_data = {}
