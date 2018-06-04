@@ -179,6 +179,8 @@ def broadcast(name, private_key, register_addr, consensus_hash, blockchain_clien
         log.debug("Using paying address..: %s" % from_address)
 
         inputs = get_unspents( from_address, blockchain_client )
+
+        log.debug("Using inputs..: %s" % inputs)
         script_pubkey = get_script_pubkey( user_public_key )
 
     else:
