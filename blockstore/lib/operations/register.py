@@ -105,7 +105,7 @@ def build(name, testset=False):
     return packaged_script 
 
 
-def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=None, pay_fee=True, format='bin' ):
+def make_outputs( data, inputs, register_addr, change_addr, renewal_fee=None, pay_fee=True, format='bin' ):
     """
     Make outputs for a register:
     [0] OP_RETURN with the name 
@@ -132,25 +132,25 @@ def make_outputs( data, change_inputs, register_addr, change_addr, renewal_fee=N
         
         # change address (can be the subsidy address)
         {"script_hex": make_pay_to_address_script(change_addr),
-         "value": calculate_change_amount(change_inputs, 0, 0)},
+         "value": calculate_change_amount(inputs, 0, 0)},
     ]
 
-    donation_fee = 0
+    # donation_fee = 0
 
-    if BLOCKSTORE_DONATION_ADDRESS is not None:
-        if BLOCKSTORE_DONATION_PERCENT > 0:
-            if renewal_fee is not None:
-                donation_fee = renewal_fee * BLOCKSTORE_DONATION_PERCENT
+    # if BLOCKSTORE_DONATION_ADDRESS is not None:
+    #     if BLOCKSTORE_DONATION_PERCENT > 0:
+    #         if renewal_fee is not None:
+    #             donation_fee = renewal_fee * BLOCKSTORE_DONATION_PERCENT
 
-                outputs.append(
-                    # Reddcoin donation address
-                    {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
-                    "value": donation_fee}
-                )
+    #             outputs.append(
+    #                 # Reddcoin donation address
+    #                 {"script_hex": make_pay_to_address_script(BLOCKSTORE_DONATION_ADDRESS),
+    #                 "value": donation_fee}
+    #             )
 
     if pay_fee:
-        dust_fee = tx_dust_fee_from_inputs_and_outputs( change_inputs, outputs )
-        outputs[2]['value'] = calculate_change_amount( change_inputs, bill + donation_fee, dust_fee )
+        dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
+        outputs[2]['value'] = calculate_change_amount( inputs, bill, dust_fee )
 
     return outputs
     
@@ -160,6 +160,10 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
     # sanity check 
     if subsidy_public_key is not None:
         # if subsidizing, we're only giving back a tx to be signed
+        tx_only = True
+
+    if user_public_key is not None:
+        # not signing the transactoin, and only want the tx 
         tx_only = True
 
     if subsidy_public_key is None and private_key is None:
@@ -172,9 +176,10 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
         blockchain_broadcaster = blockchain_client 
     
     from_address = None 
-    change_inputs = None
+    inputs = None
     private_key_obj = None
     subsidized_renewal = False
+    script_pubkey = None    # to be mixed into preorder hash
     
     if subsidy_public_key is not None:
         # subsidizing
@@ -189,7 +194,20 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
             # registering or renewing under the subsidy key
             from_address = pubk.address()
 
-        change_inputs = get_unspents( from_address, blockchain_client )
+        inputs = get_unspents( from_address, blockchain_client )
+
+    elif user_public_key is not None:
+        #dont have priv key, making an unsigned transaction
+        pubk = ReddcoinPublicKey( user_public_key )
+        
+        from_address = ReddcoinPublicKey( user_public_key ).address()
+
+        log.debug("Using paying address..: %s" % from_address)
+
+        inputs = get_unspents( from_address, blockchain_client )
+
+        log.debug("Using inputs..: %s" % inputs)
+        script_pubkey = get_script_pubkey( user_public_key )
 
     elif private_key is not None:
         # ordering directly
@@ -197,22 +215,25 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
         public_key = pubk.to_hex()
         
         # get inputs and from address using private key
-        private_key_obj, from_address, change_inputs = analyze_private_key(private_key, blockchain_client)
+        private_key_obj, from_address, inputs = analyze_private_key(private_key, blockchain_client)
 
-    change_inputs = best_fit_selection(renewal_fee, change_inputs)
+    inputs = best_fit_selection(renewal_fee, inputs)
 
     nulldata = build(name, testset=testset)
-    outputs = make_outputs(nulldata, change_inputs, register_addr, from_address, renewal_fee=renewal_fee, pay_fee=(not subsidized_renewal), format='hex')
+    outputs = make_outputs(nulldata, inputs, register_addr, from_address, renewal_fee=renewal_fee, pay_fee=(not subsidized_renewal), format='hex')
+    tx_data = {}
+    tx_data["inputs"] = inputs
+    tx_data["outputs"] = outputs
    
     if tx_only:
         
-        unsigned_tx = serialize_transaction( change_inputs, outputs )
-        return {"unsigned_tx": unsigned_tx}
+        unsigned_tx = tx_serialize( inputs, outputs )
+        return {"unsigned_tx": unsigned_tx, "tx_data": tx_data}
     
     else:
         
         # serialize, sign, and broadcast the tx
-        response = serialize_sign_and_broadcast(change_inputs, outputs, private_key_obj, blockchain_broadcaster)
+        response = serialize_sign_and_broadcast(inputs, outputs, private_key_obj, blockchain_broadcaster)
         response.update({'data': nulldata})
         return response
 
