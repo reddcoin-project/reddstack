@@ -166,8 +166,10 @@ def broadcast(name, private_key, register_addr, blockchain_client, renewal_fee=N
         # not signing the transactoin, and only want the tx 
         tx_only = True
 
-    if subsidy_public_key is None and private_key is None:
-        raise Exception("Missing both public and private key")
+    if user_public_key is None and private_key is None:
+        raise Exception("Missing both user public and private key")
+    elif subsidy_public_key is None and private_key is None and user_public_key is None:
+        raise Exception("Missing subsidy public, and private key and user key")
     
     if not tx_only and private_key is None:
         raise Exception("Need private key for broadcasting")
