@@ -401,7 +401,8 @@ def tx_dust_fee( tx_hex ):
     # fee in BTC is 0.0001 * num_kilobytes
     # fee in satoshis:
     # 10**8 * 0.0001 * (len(tx_hex) / 1000) == 10**4 * len(tx_hex) / 1000 == 10 * len(tx_hex)
-    return 10 * len(tx_hex)
+    # or the minimum tx relay fee
+    return max( 10 * len(tx_hex), DEFAULT_RELAY_FEE)
 
 
 def tx_dust_fee_from_inputs_and_outputs( inputs, outputs ):

@@ -151,6 +151,7 @@ def make_outputs( data, inputs, register_addr, change_addr, renewal_fee=None, pa
     if pay_fee:
         dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
         outputs[2]['value'] = calculate_change_amount( inputs, bill, dust_fee )
+        log.debug("Register TX Relay fee..: %s sat" % dust_fee)
 
     return outputs
     
