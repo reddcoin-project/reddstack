@@ -70,6 +70,10 @@ NAME_PREORDER_MULTI_EXPIRE = 7 * BLOCKS_PER_DAY
 AVERAGE_BLOCKS_PER_HOUR = MINUTES_PER_HOUR/AVERAGE_MINUTES_PER_BLOCK
 COIN = 10000000
 
+""" DB load refresh time
+"""
+DB_LOAD_AGE = 60
+
 """ blockstore configs
 """
 MAX_NAMES_PER_SENDER = 25                # a sender can own exactly one name

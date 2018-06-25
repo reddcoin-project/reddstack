@@ -50,6 +50,7 @@ if not globals().has_key('log'):
 blockstore_db = None
 blockstore_db_lock = threading.Lock()
 last_load_time = 0
+last_load_time_diff = 0
 
 def get_burn_fee_from_outputs( outputs ):
     """
@@ -318,21 +319,27 @@ def get_db_state(disposition=None):
    
    global blockstore_db
    global last_load_time
+   global last_load_time_diff
 
    mtime = None
    db_filename = virtualchain.get_db_filename()
+
+   load_time_diff = int(time.time()) - last_load_time_diff
+   log.info("DB last loaded %s sec ago" % load_time_diff )
 
    if os.path.exists(db_filename):
        sb = os.stat(db_filename)
        mtime = sb.st_mtime 
 
-   if blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time:
+   if blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time or load_time_diff > DB_LOAD_AGE:
        log.info("(Re)Loading blockstore state from '%s'" % db_filename )
        blockstore_db = BlockstoreDB( db_filename )
 
        if mtime is not None:
-          last_load_time = mtime 
-   
+          last_load_time = mtime
+
+       last_load_time_diff = int(time.time())
+
    return blockstore_db
 
 
