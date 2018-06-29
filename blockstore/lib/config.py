@@ -72,7 +72,7 @@ COIN = 10000000
 
 """ DB load refresh time
 """
-DB_LOAD_AGE = 60
+DB_LOAD_AGE = 3600
 
 """ blockstore configs
 """
