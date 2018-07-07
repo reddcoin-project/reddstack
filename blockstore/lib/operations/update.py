@@ -133,7 +133,7 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
     # sanity check 
     pay_fee = True
     if user_public_key is not None:
-        pay_fee = False
+        # pay_fee = False
         tx_only = True
 
     if user_public_key is None and private_key is None:
