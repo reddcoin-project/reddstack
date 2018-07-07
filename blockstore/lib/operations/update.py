@@ -119,6 +119,7 @@ def make_outputs( data, inputs, change_address, pay_fee=True ):
     if pay_fee:
         dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
         outputs[-1]['value'] = calculate_change_amount( inputs, 0, dust_fee )
+        log.debug("Update TX Relay fee..: %s sat" % dust_fee)
 
     return outputs
 
@@ -137,7 +138,9 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
 
     if user_public_key is None and private_key is None:
         raise Exception("Missing both public and private key")
-    
+    elif subsidy_public_key is None and private_key is None and user_public_key is None:
+        raise Exception("Missing subsidy public, and private key and user key")
+
     if not tx_only and private_key is None:
         raise Exception("Need private key for broadcasting")
     
@@ -152,9 +155,12 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
         # subsidizing 
         pubk = ReddcoinPublicKey( user_public_key )
         from_address = pubk.address()
+
+        log.debug("Using paying address..: %s" % from_address)
         
         # get inputs from utxo provider 
         inputs = get_unspents( from_address, blockchain_client )
+        log.debug("Using inputs..: %s" % inputs)
 
     elif private_key is not None:
         # ordering directly
@@ -166,11 +172,14 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
         
     nulldata = build(name, consensus_hash, data_hash=data_hash, testset=testset)
     outputs = make_outputs( nulldata, inputs, from_address, pay_fee=pay_fee )
-    
+    tx_data = {}
+    tx_data["inputs"] = inputs
+    tx_data["outputs"] = outputs
+
     if tx_only:
        
-        unsigned_tx = serialize_transaction( inputs, outputs )
-        return {'unsigned_tx': unsigned_tx}
+        unsigned_tx = tx_serialize( inputs, outputs )
+        return {'unsigned_tx': unsigned_tx, "tx_data": tx_data}
 
     else:
        
