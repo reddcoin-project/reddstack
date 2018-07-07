@@ -2129,7 +2129,7 @@ class BlockstoreDB( virtualchain.StateEngine ):
 
       # must have a valid consensus hash
       if not self.is_consensus_hash_valid( block_id, consensus_hash ):
-          log.debug("Invalid consensus hash '%s'" % consensus_hash )
+          log.debug("Invalid consensus hash %s at block '%s'" % (consensus_hash, block_id) )
           return False
 
       # sender must be beneath quota
