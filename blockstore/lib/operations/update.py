@@ -138,8 +138,6 @@ def broadcast(name, data_hash, consensus_hash, private_key, blockchain_client, b
 
     if user_public_key is None and private_key is None:
         raise Exception("Missing both public and private key")
-    elif subsidy_public_key is None and private_key is None and user_public_key is None:
-        raise Exception("Missing subsidy public, and private key and user key")
 
     if not tx_only and private_key is None:
         raise Exception("Need private key for broadcasting")
