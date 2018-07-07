@@ -363,31 +363,33 @@ def best_fit_selection(amount, unspents):
     else:
         #use DEFAULT_DUST_FEE as the amount we need
         amount = DEFAULT_DUST_FEE
+    
+    difference = amount - value
+    print ("Amount - Difference = %i" % difference)
+    # find first the smaller transactions
+    for tx in unspents:
+        tx_amount = tx['value']
+        if tx_amount < difference:
+            print ("looking for smaller tx candidates")
+            print ("tx amount = %i" % tx_amount)
+            value += tx_amount
+            difference = amount - value
+            unspent_candidates.append(tx)
+            unspents.remove(tx)
+            break
 
-
-    while value < amount:
-        difference = amount - value
-        print ("Amount - Difference = %i" % difference)
-        # find first the smaller transactions
-        for tx in unspents:
-            tx_amount = tx['value']
-            if tx_amount < difference:
-                print ("looking for smaller tx candidates")
-                print ("tx amount = %i" % tx_amount)
-                value += tx_amount
-                unspent_candidates.append(tx)
-                unspents.remove(tx)
-                break
-        # find the first bigger transaction
-        for tx in unspents:
-            tx_amount = tx['value']
-            if tx_amount > difference:
-                print ("looking for larger tx candidates")
-                print ("tx amount = %i" % tx_amount)
-                value += tx_amount
-                unspent_candidates.append(tx)
-                unspents.remove(tx)
-                break
+    difference = amount - value
+    print ("Amount - Difference = %i" % difference)
+    # find the first bigger transaction
+    for tx in unspents:
+        tx_amount = tx['value']
+        if tx_amount > difference:
+            print ("looking for larger tx candidates")
+            print ("tx amount = %i" % tx_amount)
+            value += tx_amount
+            unspent_candidates.append(tx)
+            unspents.remove(tx)
+            break
 
     print ("Bestfit candidates = %s" % unspent_candidates)
 
