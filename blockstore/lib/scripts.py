@@ -355,6 +355,7 @@ def tx_analyze_inputs( inputs, bitcoind_opts ):
     
 def best_fit_selection(amount, unspents):
     print ("in Best Fit")
+    print ("Unspents candidates = %s" % unspents)
     value = 0
     unspent_candidates = []
 
