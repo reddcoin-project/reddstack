@@ -325,7 +325,8 @@ def get_db_state(disposition=None):
    db_filename = virtualchain.get_db_filename()
 
    load_time_diff = int(time.time()) - last_load_time_diff
-   log.info("DB last loaded %s sec ago" % load_time_diff )
+   if (load_time_diff % 10) == 0:
+       log.info("DB last loaded %s sec ago" % load_time_diff )
 
    if os.path.exists(db_filename):
        sb = os.stat(db_filename)
