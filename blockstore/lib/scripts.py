@@ -354,7 +354,6 @@ def tx_analyze_inputs( inputs, bitcoind_opts ):
     return ret_inputs
     
 def best_fit_selection(amount, unspents):
-    print ("in Best Fit")
     value = 0
     unspent_candidates = []
 
@@ -367,13 +366,13 @@ def best_fit_selection(amount, unspents):
 
     while value < amount:
         difference = amount - value
-        print ("Amount - Difference = %i" % difference)
+        log.debug("Amount - Difference = %i" % difference)
         # find first the smaller transactions
         for tx in unspents:
             tx_amount = tx['value']
             if tx_amount < difference:
-                print ("looking for smaller tx candidates")
-                print ("tx amount = %i" % tx_amount)
+                log.debug("looking for smaller tx candidates")
+                log.debug("tx amount = %i" % tx_amount)
                 value += tx_amount
                 unspent_candidates.append(tx)
                 unspents.remove(tx)
@@ -382,14 +381,14 @@ def best_fit_selection(amount, unspents):
         for tx in unspents:
             tx_amount = tx['value']
             if tx_amount > difference:
-                print ("looking for larger tx candidates")
-                print ("tx amount = %i" % tx_amount)
+                log.debug("looking for larger tx candidates")
+                log.debug("tx amount = %i" % tx_amount)
                 value += tx_amount
                 unspent_candidates.append(tx)
                 unspents.remove(tx)
                 break
 
-    print ("Bestfit candidates = %s" % unspent_candidates)
+    log.debug("Bestfit candidates = %s" % unspent_candidates)
 
     return unspent_candidates
 
