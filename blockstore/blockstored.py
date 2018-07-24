@@ -325,6 +325,23 @@ def get_name_cost( name ):
     return name_fee
 
 
+def get_fees():
+    """
+    The minimum fee for relaying is the dust_fee
+    We need to send 2 transactions (preorder, register)
+    account for both of these
+    """
+    return DEFAULT_DUST_FEE * 2
+
+
+def get_donation( name_cost ):
+    """
+    Calculate the estimated donation amount that will be applied
+    """
+    donation = BLOCKSTORE_DONATION_PERCENT * name_cost
+    return donation
+
+
 def get_max_subsidy( testset=False ):
     """
     Get the maximum subsidy we offer, and get a key with a suitable balance
@@ -1651,8 +1668,13 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
 
             else:
                return {"error": "Unknown/invalid namespace"}
+        
+        name_cost = int(math.ceil(ret))
+        fees = get_fees()
+        donation = get_donation( name_cost )
+        total = name_cost + fees + donation
 
-        return {"satoshis": int(math.ceil(ret))}
+        return {"satoshis": name_cost, "est_fees": fees, "opt_subsidy": donation, "est_totalcost": total}
 
 
     def jsonrpc_get_namespace_cost( self, namespace_id ):
