@@ -1674,7 +1674,7 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         donation = get_donation( name_cost )
         total = name_cost + fees + donation
 
-        return {"satoshis": name_cost, "est_fees": fees, "opt_subsidy": donation, "est_totalcost": total}
+        return {"satoshis": int(name_cost), "est_fees": int(fees), "opt_subsidy": int(donation), "est_totalcost": int(total)}
 
 
     def jsonrpc_get_namespace_cost( self, namespace_id ):
