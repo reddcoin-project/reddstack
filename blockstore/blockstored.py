@@ -331,7 +331,7 @@ def get_fees():
     We need to send 2 transactions (preorder, register)
     account for both of these
     """
-    return DEFAULT_DUST_FEE * 2
+    return DEFAULT_RELAY_FEE * 2
 
 
 def get_donation( name_cost ):
