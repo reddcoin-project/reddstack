@@ -1176,7 +1176,9 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         names = db.get_names_owned_by_address( address )
         if names is None:
             names = []
-        return names
+        reply = {}
+        reply['names'] = names
+        return reply
 
 
     def jsonrpc_preorder( self, name, privatekey, register_addr ):
