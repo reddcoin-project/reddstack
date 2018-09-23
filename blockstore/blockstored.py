@@ -1150,6 +1150,7 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         db = get_state_engine()
         reply['consensus'] = db.get_current_consensus()
         reply['last_block'] = db.get_current_block()
+        reply['indexing'] = is_indexing()
         reply['blockstore_version'] = "%s.%s" % (VERSION, BLOCKSTORE_VERSION)
         reply['testset'] = str(self.testset)
         return reply
