@@ -39,7 +39,7 @@ except:
 DEBUG = True
 TESTNET = False
 
-VERSION = "0.0.11"
+VERSION = "0.0.12"
 TX_VERSION = 2 # Version of TX (PoSV >= 2)
 
 #Donation address
