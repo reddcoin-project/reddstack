@@ -323,6 +323,9 @@ def get_db_state(disposition=None):
 
    mtime = None
    db_filename = virtualchain.get_db_filename()
+   tmp_db_filename = virtualchain.get_db_filename() + ".tmp"
+   tmp_snapshot_filename = virtualchain.get_snapshots_filename() + ".tmp"
+   tmp_lastblock_filename = virtualchain.get_lastblock_filename() + ".tmp"
 
    load_time_diff = int(time.time()) - last_load_time_diff
    if (load_time_diff % 10) == 0:
@@ -332,7 +335,14 @@ def get_db_state(disposition=None):
        sb = os.stat(db_filename)
        mtime = sb.st_mtime 
 
-   if blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time or load_time_diff > DB_LOAD_AGE:
+   log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
+   log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
+   log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
+
+   if os.path.exists( tmp_lastblock_filename ) or (os.path.exists(tmp_db_filename) or os.path.exists(tmp_snapshot_filename)):
+       log.info("Skip (Re)Loading blockstore state from '%s', Saving state in progress" % db_filename )
+
+   elif blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time or load_time_diff > DB_LOAD_AGE:
        log.info("(Re)Loading blockstore state from '%s'" % db_filename )
        blockstore_db = BlockstoreDB( db_filename )
 
@@ -709,16 +719,27 @@ def sync_blockchain( bt_opts, last_block ):
 
     log.info("Synchronizing database up to block %s" % last_block)
     db_filename = virtualchain.get_db_filename()
-    new_db = BlockstoreDB( db_filename )
-
-    virtualchain.sync_virtualchain( bt_opts, last_block, new_db )
-
-    # refresh
-    blockstore_db_lock.acquire()
-    del blockstore_db
-    blockstore_db = new_db
+    tmp_db_filename = virtualchain.get_db_filename() + ".tmp"
+    tmp_snapshot_filename = virtualchain.get_snapshots_filename() + ".tmp"
+    tmp_lastblock_filename = virtualchain.get_lastblock_filename() + ".tmp"
     
-    blockstore_db_lock.release()
+    log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
+    log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
+    log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
+
+    if os.path.exists( tmp_lastblock_filename ) or (os.path.exists(tmp_db_filename) or os.path.exists(tmp_snapshot_filename)):
+      log.info("Database sync already in progress for '%s', Saving state in progress" % db_filename )
+    else:
+      new_db = BlockstoreDB( db_filename )
+
+      virtualchain.sync_virtualchain( bt_opts, last_block, new_db )
+
+      # refresh
+      blockstore_db_lock.acquire()
+      del blockstore_db
+      blockstore_db = new_db
+      
+      blockstore_db_lock.release()
 
 
 def stop_sync_blockchain():
