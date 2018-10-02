@@ -335,11 +335,10 @@ def get_db_state(disposition=None):
        sb = os.stat(db_filename)
        mtime = sb.st_mtime 
 
-   log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
-   log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
-   log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
-
    if os.path.exists( tmp_lastblock_filename ) or (os.path.exists(tmp_db_filename) or os.path.exists(tmp_snapshot_filename)):
+       log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
+       log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
+       log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
        log.info("Skip (Re)Loading blockstore state from '%s', Saving state in progress" % db_filename )
 
    elif blockstore_db is None or mtime is None or not os.path.exists(db_filename) or sb.st_mtime != last_load_time or load_time_diff > DB_LOAD_AGE:
@@ -723,11 +722,10 @@ def sync_blockchain( bt_opts, last_block ):
     tmp_snapshot_filename = virtualchain.get_snapshots_filename() + ".tmp"
     tmp_lastblock_filename = virtualchain.get_lastblock_filename() + ".tmp"
     
-    log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
-    log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
-    log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
-
     if os.path.exists( tmp_lastblock_filename ) or (os.path.exists(tmp_db_filename) or os.path.exists(tmp_snapshot_filename)):
+      log.debug("Temp lastblock exists = %s" % os.path.exists( tmp_lastblock_filename ))
+      log.debug("Temp DB exists = %s" % os.path.exists( tmp_db_filename ))
+      log.debug("Temp Snapshot exists = %s" % os.path.exists( tmp_snapshot_filename ))
       log.info("Database sync already in progress for '%s', Saving state in progress" % db_filename )
     else:
       new_db = BlockstoreDB( db_filename )
