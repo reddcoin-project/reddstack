@@ -1141,7 +1141,7 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         Get the number of blocks the
         """
         bitcoind_opts = default_bitcoind_opts( virtualchain.get_config_filename() )
-        bitcoind = get_bitcoind( new_bitcoind_opts=bitcoind_opts, new=True )
+        bitcoind = get_bitcoind(new_bitcoind_opts=bitcoind_opts)
 
         info = bitcoind.getinfo()
         reply = {}
@@ -1160,7 +1160,7 @@ class BlockstoredRPC(jsonrpc.JSONRPC, object):
         Get the tx details
         """
         bitcoind_opts = default_bitcoind_opts( virtualchain.get_config_filename() )
-        bitcoind = get_bitcoind( new_bitcoind_opts=bitcoind_opts, new=True )
+        bitcoind = get_bitcoind( new_bitcoind_opts=bitcoind_opts )
 
         reply = {}
         reply['bitcoind_blockhash'] = 'null'
