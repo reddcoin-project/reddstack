@@ -227,7 +227,8 @@ def make_outputs( data, inputs, reveal_addr, change_addr, format='bin', testset=
          "value": calculate_change_amount(inputs, 0, 0)},
     ]
 
-    dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
+    # dust_fee = tx_dust_fee_from_inputs_and_outputs( inputs, outputs )
+    dust_fee = DEFAULT_RELAY_FEE
     outputs[-1]['value'] = calculate_change_amount( inputs, DEFAULT_DUST_FEE, dust_fee )
     return outputs
     
