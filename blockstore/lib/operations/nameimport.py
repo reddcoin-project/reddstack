@@ -146,7 +146,7 @@ def broadcast(name, recipient_address, update_hash, private_key, blockchain_clie
     nulldata = build(name, testset=testset)
     
     # convert update_hash from a hex string so it looks like an address
-    update_hash_b58 = b58check_encode( unhexlify(update_hash) )
+    update_hash_b58 = b58check_encode( unhexlify(update_hash), 61 )
     
     # get inputs and from address
     private_key_obj, from_address, inputs = analyze_private_key(private_key, blockchain_client)
