@@ -37,7 +37,7 @@ except:
     blockstore_client = None
 
 DEBUG = True
-TESTNET = False
+TESTNET = True if os.environ.get("BLOCKSTACK_TESTNET", None) == "1" else False
 
 VERSION = "0.0.12"
 TX_VERSION = 2 # Version of TX (PoSV >= 2)
