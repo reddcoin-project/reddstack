@@ -24,7 +24,7 @@
 from utilitybelt import is_hex, is_valid_int
 from binascii import hexlify, unhexlify
 from virtualchain import ReddcoinPrivateKey, ReddcoinPublicKey
-from pyreddcoin import script_to_hex, make_pay_to_address_script, analyze_private_key
+from pyreddcoin import script_to_hex, make_pay_to_address_script
 from pyreddcoin.transactions.outputs import calculate_change_amount
 
 import virtualchain
@@ -298,7 +298,7 @@ def tx_output_is_burn( output ):
     """
     Is an output's script an OP_RETURN script to our burn address?
     """
-    addr = pyreddcoin.script_hex_to_address( output['script_hex'], version_byte=61 )
+    addr = virtualchain.script_hex_to_address( output['script_hex'], version_byte=61 )
     return (addr == BLOCKSTORE_BURN_ADDRESS)
 
 
@@ -445,7 +445,7 @@ def tx_make_subsidizable( blockstore_tx, fee_cb, max_fee, subsidy_key, utxo_clie
     """
    
     # get subsidizer key info
-    private_key_obj, payer_address, payer_utxo_inputs = analyze_private_key(subsidy_key, utxo_client)
+    private_key_obj, payer_address, payer_utxo_inputs = virtualchain.analyze_private_key(subsidy_key, utxo_client)
     
     tx_inputs, tx_outputs, locktime, version = tx_deserialize( blockstore_tx )
 
