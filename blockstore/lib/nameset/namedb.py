@@ -156,6 +156,7 @@ class BlockstoreDB( virtualchain.StateEngine ):
 
          except Exception as e:
             log.warning("Failed to open '%s'; creating a new database" % db_filename)
+            self.save_db(db_filename)
             pass
 
       for name, name_record in self.name_records.items():
