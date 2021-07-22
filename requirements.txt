@@ -13,6 +13,7 @@ pyreddcointools==1.1.43
 python-bitcoinrpc==0.1
 requests==2.8.1
 rpcudp==1.0
+simplejson==3.8.2
 six==1.10.0
 Twisted==15.4.0
 txJSON-RPC==0.5
