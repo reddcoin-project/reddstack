@@ -332,12 +332,13 @@ NAMESPACE_DEFAULT = {
 
 """ UTXOs
 """
-SUPPORTED_UTXO_PROVIDERS = [ "chain_com", "blockcypher", "blockchain_info", "reddcoin_com", "bitcoind_utxo", "mock_utxo" ]
+SUPPORTED_UTXO_PROVIDERS = [ "chain_com", "blockcypher", "blockchain_info", "reddcoin_com", "reddcoin_com_testnet", "bitcoind_utxo", "mock_utxo" ]
 SUPPORTED_UTXO_PARAMS = {
     "chain_com": ["api_key_id", "api_key_secret"],
     "blockcypher": ["api_token"],
     "blockchain_info": ["api_token"],
     "reddcoin_com": [],
+    "reddcoin_com_testnet": [],
     "bitcoind_utxo": ["rpc_username", "rpc_password", "server", "port", "use_https", "version_byte"],
     "mock_utxo": []
 }
@@ -347,6 +348,7 @@ SUPPORTED_UTXO_PROMPT_MESSAGES = {
     "blockcypher": "Please enter your Blockcypher API token.",
     "blockchain_info": "Please enter your blockchain.info API token.",
     "reddcoin_com": "Reddcoin explorer",
+    "reddcoin_com_testnet": "Reddcoin testnet explorer",
     "bitcoind_utxo": "Please enter your fully-indexed bitcoind node information.",
     "mock_utxo": "Mock UTXO provider.  Do not use in production."
 }
@@ -809,6 +811,9 @@ def default_utxo_provider_opts( utxo_provider, config_file=None ):
    elif utxo_provider == "reddcoin_com":
        return default_reddcoin_com_opts( config_file=config_file )
 
+   elif utxo_provider == "reddcoin_com_testnet":
+       return default_reddcoin_com_testnet_opts( config_file=config_file )
+
    elif utxo_provider == "bitcoind_utxo":
        return default_bitcoind_utxo_opts( config_file=config_file )
 
@@ -955,6 +960,38 @@ def default_reddcoin_com_opts( config_file=None ):
          del reddcoin_com_opts[k]
 
    return reddcoin_com_opts
+
+def default_reddcoin_com_testnet_opts( config_file=None ):
+    """
+    Get our default blockchain.info options from a config file.
+    """
+
+    if config_file is None:
+        config_file = virtualchain.get_config_filename()
+
+    parser = SafeConfigParser()
+    parser.read( config_file )
+
+    reddcoin_com_opts = {}
+
+    api_token = None
+
+    if parser.has_section("reddcoin_com_testnet"):
+
+        if parser.has_option("reddcoin_com_testnet", "api_token"):
+            api_token = parser.get("reddcoin_com_testnet", "api_token")
+
+    reddcoin_com_testnet_opts = {
+        "utxo_provider": "reddcoin_com_testnet",
+        "api_token": api_token
+    }
+
+    # strip Nones
+    for (k, v) in reddcoin_com_testnet_opts.items():
+        if v is None:
+            del reddcoin_com_testnet_opts[k]
+
+    return reddcoin_com_testnet_opts
 
 def default_bitcoind_utxo_opts( config_file=None ):
    """
@@ -1544,6 +1581,9 @@ def connect_utxo_provider( utxo_opts ):
 
    elif utxo_provider == "reddcoin_com":
        return pyreddcoin.ReddcoinComClient( utxo_opts['api_token'] )
+
+   elif utxo_provider == "reddcoin_com_testnet":
+       return pyreddcoin.ReddcoinComTestnetClient( utxo_opts['api_token'] )
 
    elif utxo_provider == "bitcoind_utxo":
        return pyreddcoin.BitcoindClient( utxo_opts['rpc_username'], utxo_opts['rpc_password'], use_https=utxo_opts['use_https'], server=utxo_opts['server'], port=utxo_opts['port'], version_byte=utxo_opts['version_byte'] )
